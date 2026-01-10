@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+@theme {
+  /* Exact Binance Color Palette - Enhanced Vibrancy */
+  
+  /* Backgrounds */
+  --color-bg-base: #181A20; /* Main Dark Background */
+  --color-bg-card: #2B3139; /* Card/Section Background */
+  --color-bg-hover: #474D57; /* Hover states */
+
+  /* Text Colors */
+  --color-text-primary: #FFFFFF; /* Pure White for maximum pop */
+  --color-text-secondary: #B7BDC6; /* Lighter grey for better readability */
+  --color-text-disabled: #5E6673;
+
+  /* Brand Colors */
+  --color-primary: #FCD535; /* Primary Yellow */
+  --color-primary-hover: #F0B90B; 
+  --color-primary-bright: #FFE040; /* Brighter/Lighter Yellow for text */ 
+  
+  /* Semantic Colors - High Saturation */
+  --color-success: #03A66D; /* Vivid Green */
+  --color-success-bg: rgba(3, 166, 109, 0.1);
+  --color-danger: #CF304A; /* Vivid Red */
+  
+  /* Font Family */
+  --font-binance: "IBM Plex Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
+  
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-bg-base);
+    color: var(--color-text-primary);
+    font-family: var(--font-binance);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+}
+
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Custom Scrollbar for Trading Interface */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #2B3139;
+  border-radius: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #323a45;
+}
