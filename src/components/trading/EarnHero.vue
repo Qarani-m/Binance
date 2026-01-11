@@ -61,10 +61,10 @@ onUnmounted(() => {
             <div class="flex-1 flex flex-col justify-center">
                 <h1 class="text-[52px] font-bold text-white leading-tight mb-4 tracking-tight">Binance Earn</h1>
                 <p class="text-[16px] text-[#848E9C] mb-8">Smart Earning Starts Here – 300+ Crypto Assets Supported</p>
-                <button
-                    class="bg-[#FCD535] hover:bg-[#FCD535]/90 text-black font-bold px-10 py-2.5 rounded text-[14px] w-fit">
+                <router-link to="/login"
+                    class="bg-[#FCD535] hover:bg-[#FCD535]/90 text-black font-bold px-10 py-2.5 rounded text-[14px] w-fit flex items-center justify-center">
                     Log In
-                </button>
+                </router-link>
             </div>
 
             <!-- Right Column: Slider -->

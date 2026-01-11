@@ -41,12 +41,12 @@ const toggle = (val) => {
 
             <!-- Login/Register CTA -->
             <div class="space-y-3">
-                <button
-                    class="w-full bg-[#FCD535] hover:bg-[#FCD535]/90 text-black font-bold py-2.5 rounded transition-colors uppercase">Register
-                    Now</button>
-                <button
-                    class="w-full border border-[#2B3139] hover:bg-[#2B3139]/50 text-white font-bold py-2.5 rounded transition-colors uppercase">Log
-                    In</button>
+                <router-link to="/register"
+                    class="w-full bg-[#FCD535] hover:bg-[#FCD535]/90 text-black font-bold py-2.5 rounded transition-colors uppercase flex items-center justify-center">Register
+                    Now</router-link>
+                <router-link to="/login"
+                    class="w-full border border-[#2B3139] hover:bg-[#2B3139]/50 text-white font-bold py-2.5 rounded transition-colors uppercase flex items-center justify-center">Log
+                    In</router-link>
             </div>
 
             <!-- Account Stats -->

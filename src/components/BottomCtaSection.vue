@@ -7,9 +7,9 @@
             Secure, Low-Fee Trading on Binance
         </h2>
 
-        <a href="#"
+        <router-link to="/register"
             class="inline-block px-12 py-3.5 bg-primary hover:bg-primary-hover text-black font-bold text-[16px] rounded-[4px] transition-colors">
             Sign Up Now
-        </a>
+        </router-link>
     </section>
 </template>

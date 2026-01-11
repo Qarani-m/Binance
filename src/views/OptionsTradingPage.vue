@@ -4,30 +4,36 @@ import OptionsNotification from '@/components/trading/OptionsNotification.vue'
 import OptionsTicker from '@/components/trading/OptionsTicker.vue'
 import OptionsChain from '@/components/trading/OptionsChain.vue'
 import OptionsTradePanel from '@/components/trading/OptionsTradePanel.vue'
+import OptionsBottomSection from '@/components/trading/OptionsBottomSection.vue'
 </script>
 
 <template>
-    <div
-        class="h-screen lg:h-screen flex flex-col bg-[#0B0E11] text-[#EAECEF] overflow-hidden lg:overflow-hidden select-none">
+    <div class="h-screen flex flex-col bg-[#0B0E11] text-[#EAECEF] overflow-hidden select-none">
         <!-- Section 1: Top Navigation Bar -->
         <AppHeader :isFixed="false" mode="options" />
 
         <!-- Section 2: System Notification Banner -->
-        <OptionsNotification class="hidden md:flex" />
+        <OptionsNotification class="hidden md:flex flex-none" />
 
         <!-- Main Content Area -->
         <main class="flex-1 flex flex-col overflow-y-auto lg:overflow-hidden">
             <!-- Section 3: Ticker & Selector -->
-            <OptionsTicker />
+            <OptionsTicker class="flex-none" />
 
             <!-- Trading Layout: Table and Sidebar -->
-            <div class="flex-1 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden">
-                <!-- Section 4: Main Options Chain Table -->
-                <OptionsChain class="flex-1 min-h-[500px] lg:min-h-0" />
+            <div class="flex-1 flex flex-col lg:flex-row min-h-0 overflow-hidden">
+                <!-- Main Center Column: Chain + Bottom Section -->
+                <div class="flex-1 flex flex-col min-w-0 border-r border-[#2B3139]">
+                    <!-- Section 4: Main Options Chain Table -->
+                    <OptionsChain class="flex-1 min-h-[400px]" />
 
-                <!-- Section 5: Trade Options Panel -->
+                    <!-- Section 5: Bottom Trades & Positions -->
+                    <OptionsBottomSection class="h-[350px] flex-none overflow-y-auto" />
+                </div>
+
+                <!-- Right Sidebar: Trade Options Panel -->
                 <OptionsTradePanel
-                    class="w-full lg:w-[320px] xl:w-[380px] border-t lg:border-t-0 lg:border-l border-[#2B3139] bg-[#161A1E]" />
+                    class="w-full lg:w-[320px] xl:w-[380px] bg-[#161A1E] flex-none border-t lg:border-t-0" />
             </div>
         </main>
 

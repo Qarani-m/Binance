@@ -6,6 +6,7 @@ import CoinMFuturesHeader from '@/components/trading/CoinMFuturesHeader.vue'
 import CoinMFuturesOrderBook from '@/components/trading/CoinMFuturesOrderBook.vue'
 import CoinMFuturesTrades from '@/components/trading/CoinMFuturesTrades.vue'
 import CoinMFuturesTradeForm from '@/components/trading/CoinMFuturesTradeForm.vue'
+import CoinMFuturesChart from '@/components/trading/CoinMFuturesChart.vue'
 </script>
 
 <template>
@@ -59,20 +60,7 @@ import CoinMFuturesTradeForm from '@/components/trading/CoinMFuturesTradeForm.vu
                         </div>
 
                         <!-- Chart Visualization -->
-                        <div class="flex-1 bg-[#181A20] relative flex items-center justify-center">
-                            <div
-                                class="absolute inset-0 opacity-5 flex items-center justify-center p-10 md:p-20 select-none pointer-events-none">
-                                <svg class="w-64 md:w-96 h-64 md:h-96 text-white" fill="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z" />
-                                </svg>
-                            </div>
-                            <div class="text-center z-10 space-y-4 px-4">
-                                <div
-                                    class="text-2xl md:text-5xl font-bold font-mono text-white/20 select-none uppercase">
-                                    BTCUSD COIN-M</div>
-                            </div>
-                        </div>
+                        <CoinMFuturesChart class="flex-1" />
                     </div>
 
                     <!-- Section 4 (Bottom): Tabs (Positions, etc.) -->

@@ -113,10 +113,10 @@ const receiveAmount = ref('1')
                         </div>
                     </div>
 
-                    <button
-                        class="w-full bg-primary hover:bg-[#F0B90B] text-black font-extrabold py-4 rounded-xl text-[16px] transition-all shadow-xl shadow-primary/10 mt-4">
+                    <router-link to="/login"
+                        class="w-full bg-primary hover:bg-[#F0B90B] text-black font-extrabold py-4 rounded-xl text-[16px] transition-all shadow-xl shadow-primary/10 mt-4 flex items-center justify-center">
                         Log In/Sign Up
-                    </button>
+                    </router-link>
                 </div>
             </div>
 

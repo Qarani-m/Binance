@@ -39,10 +39,10 @@ const slides = [
                 <div class="flex-1">
                     <h1 class="text-[48px] font-bold text-white mb-2">Simple Earn</h1>
                     <p class="text-[16px] text-[#848E9C] mb-10">Simple way to deposit & Earn.</p>
-                    <button
-                        class="bg-[#FCD535] hover:bg-[#FCD535]/90 text-black font-bold px-10 py-2.5 rounded text-[14px]">
+                    <router-link to="/login"
+                        class="bg-[#FCD535] hover:bg-[#FCD535]/90 text-black font-bold px-10 py-2.5 rounded text-[14px] flex items-center justify-center w-fit">
                         Log In
-                    </button>
+                    </router-link>
                 </div>
 
                 <!-- Right Promotional Banner -->

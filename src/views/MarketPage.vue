@@ -1,7 +1,6 @@
 <script setup>
 import AppHeader from '@/components/AppHeader.vue'
 import AppFooter from '@/components/AppFooter.vue'
-import MarketOverview from '@/components/market/MarketOverview.vue'
 import MarketTabs from '@/components/market/MarketTabs.vue'
 import MarketTable from '@/components/market/MarketTable.vue'
 </script>
@@ -11,7 +10,6 @@ import MarketTable from '@/components/market/MarketTable.vue'
         <AppHeader :isFixed="true" />
 
         <main class="flex-1 mt-[64px]">
-            <MarketOverview />
             <MarketTabs />
             <MarketTable />
         </main>

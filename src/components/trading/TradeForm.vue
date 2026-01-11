@@ -129,10 +129,10 @@ const setOrderType = (type) => orderType.value = type
                 </div>
 
                 <!-- Action Button -->
-                <button
-                    class="w-full bg-[#0ECB81] hover:bg-[#0ECB81]/90 text-black font-bold py-2.5 rounded-[4px] text-[15px] mt-1 transition-colors">
+                <router-link to="/login"
+                    class="w-full bg-[#0ECB81] hover:bg-[#0ECB81]/90 text-black font-bold py-2.5 rounded-[4px] text-[15px] mt-1 transition-colors flex items-center justify-center">
                     Log In
-                </button>
+                </router-link>
 
                 <!-- Fee Rate -->
                 <div class="text-[11px] text-[#848E9C] mt-1">

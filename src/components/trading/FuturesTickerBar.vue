@@ -1,5 +1,7 @@
 <script setup>
-const pairs = [
+import { ref, onMounted, onUnmounted } from 'vue'
+
+const pairs = ref([
     { name: 'BTCUSDT', change: -0.07, isNegative: true },
     { name: 'ETHUSDT', change: -0.57, isNegative: true },
     { name: 'BNBUSDT', change: 1.31, isNegative: false },
@@ -10,7 +12,26 @@ const pairs = [
     { name: 'MATICUSDT', change: 0.45, isNegative: false },
     { name: 'DOTUSDT', change: -0.78, isNegative: true },
     { name: 'AVAXUSDT', change: 1.23, isNegative: false },
-]
+])
+
+let interval = null
+
+onMounted(() => {
+    interval = setInterval(() => {
+        pairs.value = pairs.value.map(p => {
+            const newChange = p.change + (Math.random() - 0.5) * 0.05
+            return {
+                ...p,
+                change: parseFloat(newChange.toFixed(2)),
+                isNegative: newChange < 0
+            }
+        })
+    }, 2000)
+})
+
+onUnmounted(() => {
+    if (interval) clearInterval(interval)
+})
 </script>
 
 <template>

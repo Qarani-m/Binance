@@ -45,7 +45,14 @@ const pair = ref('LISA/USDT')
                     </div>
                     <div class="flex items-center justify-center h-[160px] text-[#848E9C] text-sm">
                         <div class="text-center">
-                            <p>Log In or <span class="text-[#F0B90B]">Register Now</span> to trade</p>
+                            <p>
+                                <router-link to="/login" class="text-white hover:text-primary transition-colors">Log
+                                    In</router-link>
+                                or
+                                <router-link to="/register"
+                                    class="text-[#F0B90B] hover:underline transition-all">Register Now</router-link>
+                                to trade
+                            </p>
                         </div>
                     </div>
                 </div>

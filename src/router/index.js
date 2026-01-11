@@ -9,6 +9,11 @@ const router = createRouter({
       component: () => import("@/views/HomePage.vue"),
     },
     {
+      path: "/dashboard",
+      name: "dashboard",
+      component: () => import("@/views/DashboardPage.vue"),
+    },
+    {
       path: "/trade/:pair",
       name: "spot-trading",
       component: () => import("@/views/SpotTradingPage.vue"),
@@ -97,6 +102,21 @@ const router = createRouter({
       path: "/alpha",
       name: "alpha-trading",
       component: () => import("@/views/AlphaTradingPage.vue"),
+    },
+    {
+      path: "/login",
+      name: "login",
+      component: () => import("@/views/LoginPage.vue"),
+    },
+    {
+      path: "/register",
+      name: "register",
+      component: () => import("@/views/RegisterPage.vue"),
+    },
+    {
+      path: "/price/:ticker",
+      name: "price-page",
+      component: () => import("@/views/PricePage.vue"),
     },
   ],
 });

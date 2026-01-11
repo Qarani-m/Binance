@@ -31,10 +31,10 @@
                         *Advanced Earn products involve higher risks. See our <a href="#"
                             class="text-[#FCD535] hover:underline">FAQ</a> for more information.
                     </p>
-                    <button
-                        class="bg-[#FCD535] hover:bg-[#FCD535]/90 text-black font-bold px-10 py-2.5 rounded text-[14px]">
+                    <router-link to="/login"
+                        class="bg-[#FCD535] hover:bg-[#FCD535]/90 text-black font-bold px-10 py-2.5 rounded text-[14px] flex items-center justify-center w-fit">
                         Log In
-                    </button>
+                    </router-link>
                 </div>
 
                 <!-- Right Graphic -->

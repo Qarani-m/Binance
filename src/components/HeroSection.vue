@@ -105,35 +105,35 @@ const newsItems = [
               </span>
             </div>
           </div>
-          <button
-            class="h-[48px] px-8 bg-primary hover:bg-primary-hover text-black font-bold rounded-[8px] transition-colors whitespace-nowrap">
+          <router-link to="/register"
+            class="h-[48px] px-8 bg-primary hover:bg-primary-hover text-black font-bold rounded-[8px] transition-colors whitespace-nowrap flex items-center justify-center">
             Sign Up
-          </button>
+          </router-link>
         </div>
 
         <!-- Social / Download -->
         <div class="flex gap-4">
-          <button
+          <router-link to="/register"
             class="w-10 h-10 rounded-full bg-bg-card hover:bg-bg-hover flex items-center justify-center transition-colors">
             <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
               <path
                 d="M21.35 11.1h-9.17v2.73h6.51c-.33 3.81-3.5 5.44-6.5 5.44C8.36 19.27 5 16.25 5 12c0-4.1 3.2-7.27 7.2-7.27 3.09 0 4.9 1.97 4.9 1.97L19 4.72S16.56 2 12.1 2C6.42 2 2.03 6.8 2.03 12c0 5.05 4.13 10 10.22 10 5.35 0 9.25-3.67 9.25-9.09 0-1.15-.15-1.81-.15-1.81Z" />
             </svg>
-          </button>
-          <button
+          </router-link>
+          <router-link to="/register"
             class="w-10 h-10 rounded-full bg-bg-card hover:bg-bg-hover flex items-center justify-center transition-colors">
             <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
               <path
                 d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.74 1.18 0 2.21-.93 3.79-.93 1.05-.01 2.37.56 2.9 1.35-3.77 1.94-2.88 5.76.51 7.15-.35 1.76-1.57 3.74-2.28 4.66ZM12.03 5.33c-.05-2.45 2.15-4.34 4.54-4.33.25 2.87-2.92 4.41-4.54 4.33Z" />
             </svg>
-          </button>
-          <button
+          </router-link>
+          <router-link to="/login"
             class="w-10 h-10 rounded-full bg-bg-card hover:bg-bg-hover flex items-center justify-center transition-colors">
             <svg class="w-5 h-5 text-text-primary" fill="none" stroke="currentColor" stroke-width="2"
               viewBox="0 0 24 24">
               <path d="M4 4h4v4H4zM16 4h4v4h-4zM4 16h4v4H4zM16 16h4v4h-4zM9 9h6v6H9z" />
             </svg>
-          </button>
+          </router-link>
         </div>
 
       </div>

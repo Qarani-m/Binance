@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import AppHeader from '@/components/AppHeader.vue'
 import FuturesTickerBar from '@/components/trading/FuturesTickerBar.vue'
 import FuturesHeader from '@/components/trading/FuturesHeader.vue'
@@ -8,6 +8,39 @@ import FuturesTrades from '@/components/trading/FuturesTrades.vue'
 import FuturesTradeForm from '@/components/trading/FuturesTradeForm.vue'
 
 const activeSideTab = ref('trades')
+
+const tickerItems = ref([
+    { ticker: 'TUSDТ', change: -6.45, price: 0.4639, isNegative: true },
+    { ticker: 'BTCUSDT', change: -0.07, price: 90622.0, isNegative: true },
+    { ticker: 'RIVERUSDT', change: -16.57, price: 13.062, isNegative: true },
+    { ticker: 'PIPIPNUSDT', change: 1.66, price: 0.41302, isNegative: false },
+    { ticker: 'RVNUSDT', change: -3.44, price: 0.03936, isNegative: true },
+    { ticker: 'SULUSDT', change: -0.02, price: 1.8066, isNegative: true },
+    { ticker: 'DEEPUSDT', change: -7.50, price: 0.05079, isNegative: true },
+    { ticker: 'OGUSDТ', change: -1.36, price: 4.82, isNegative: true },
+])
+
+let interval = null
+
+onMounted(() => {
+    interval = setInterval(() => {
+        tickerItems.value = tickerItems.value.map(item => {
+            const priceDiff = (Math.random() - 0.5) * (item.price * 0.001)
+            const newPrice = item.price + priceDiff
+            const newChange = item.change + (Math.random() - 0.5) * 0.05
+            return {
+                ...item,
+                price: parseFloat(newPrice.toFixed(item.price < 1 ? 5 : 1)),
+                change: parseFloat(newChange.toFixed(2)),
+                isNegative: newChange < 0
+            }
+        })
+    }, 2000)
+})
+
+onUnmounted(() => {
+    if (interval) clearInterval(interval)
+})
 </script>
 
 <template>
@@ -130,14 +163,11 @@ const activeSideTab = ref('trades')
             <!-- Bottom Scrolling Ticker -->
             <div class="flex-1 px-8 overflow-hidden">
                 <div class="flex items-center gap-6 whitespace-nowrap animate-ticker-slow">
-                    <span class="text-[#F6465D]">TUSDТ -6.45% ⬇ 0.4639</span>
-                    <span class="text-[#F6465D]">BTCUSDT -0.07% ⬇ 90,622.0</span>
-                    <span class="text-[#F6465D]">RIVERUSDT -16.57% ⬇ 13.062</span>
-                    <span class="text-[#0ECB81]">PIPIPNUSDT +1.66% ⬆ 0.41302</span>
-                    <span class="text-[#F6465D]">RVNUSDT -3.44% ⬇ 0.03936</span>
-                    <span class="text-[#F6465D]">SULUSDT -0.02% ⬇ 1.8066</span>
-                    <span class="text-[#F6465D]">DEEPUSDT -7.50% ⬇ 0.05079</span>
-                    <span class="text-[#F6465D]">OGUSDТ -1.36%</span>
+                    <span v-for="item in tickerItems" :key="item.ticker"
+                        :class="item.isNegative ? 'text-[#F6465D]' : 'text-[#0ECB81]'">
+                        {{ item.ticker }} {{ item.change >= 0 ? '+' : '' }}{{ item.change }}% {{ item.isNegative ? '⬇' :
+                            '⬆' }} {{ item.price.toLocaleString() }}
+                    </span>
                 </div>
             </div>
 

@@ -117,12 +117,12 @@ const price = ref('90,622.1')
 
             <!-- Action Buttons -->
             <div class="flex flex-col gap-2 pt-2">
-                <button
-                    class="w-full bg-[#FCD535] hover:bg-[#FCD535]/90 text-black font-bold py-2.5 rounded transition-colors text-[14px]">Register
-                    Now</button>
-                <button
-                    class="w-full border border-[#2B3139] hover:bg-[#2B3139]/50 text-[#EAECEF] font-bold py-2.5 rounded transition-colors text-[14px]">Log
-                    In</button>
+                <router-link to="/register"
+                    class="w-full bg-[#FCD535] hover:bg-[#FCD535]/90 text-black font-bold py-2.5 rounded transition-colors text-[14px] flex items-center justify-center">Register
+                    Now</router-link>
+                <router-link to="/login"
+                    class="w-full border border-[#2B3139] hover:bg-[#2B3139]/50 text-[#EAECEF] font-bold py-2.5 rounded transition-colors text-[14px] flex items-center justify-center">Log
+                    In</router-link>
             </div>
         </div>
     </div>

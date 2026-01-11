@@ -43,16 +43,18 @@ const tokens = [
                     <tr v-for="t in tokens" :key="t.ticker"
                         class="group hover:bg-[#1e2329] transition-all cursor-pointer">
                         <td class="py-5 pl-2">
-                            <div class="flex items-center gap-4">
+                            <router-link :to="'/price/' + t.ticker" class="flex items-center gap-4 group/item">
                                 <div
-                                    class="w-8 h-8 rounded-full bg-[#1e2329] border border-[#2b3139] flex items-center justify-center font-bold text-white text-[14px]">
+                                    class="w-8 h-8 rounded-full bg-[#1e2329] border border-[#2b3139] flex items-center justify-center font-bold text-white text-[14px] group-hover/item:border-primary transition-colors">
                                     {{ t.icon }}
                                 </div>
                                 <div class="flex items-baseline gap-2">
-                                    <span class="text-white text-[16px] font-bold">{{ t.ticker }}</span>
+                                    <span
+                                        class="text-white text-[16px] font-bold group-hover/item:text-primary transition-colors">{{
+                                        t.ticker }}</span>
                                     <span class="text-text-secondary text-[14px] font-medium">{{ t.name }}</span>
                                 </div>
-                            </div>
+                            </router-link>
                         </td>
                         <td class="py-5">
                             <div class="space-y-0.5">

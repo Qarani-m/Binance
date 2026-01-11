@@ -243,13 +243,14 @@ const closeMobileMenu = () => {
           </svg>
         </button>
 
-        <a href="#"
-          class="text-[14px] font-medium text-white hover:text-primary transition-colors whitespace-nowrap">Log In</a>
+        <router-link to="/login"
+          class="text-[14px] font-medium text-white hover:text-primary transition-colors whitespace-nowrap">Log
+          In</router-link>
 
-        <a href="#"
+        <router-link to="/register"
           class="bg-primary hover:bg-[#F0B90B] text-black px-4 py-1.5 rounded-[4px] font-medium text-[14px] transition-colors whitespace-nowrap">
           Sign Up
-        </a>
+        </router-link>
 
         <div class="w-px h-5 bg-[#2b3139]"></div>
 
@@ -261,9 +262,9 @@ const closeMobileMenu = () => {
       </div>
 
       <!-- Mobile Sign Up (Compact) -->
-      <a href="#"
+      <router-link to="/register"
         class="sm:hidden bg-primary text-black px-3 py-1.5 rounded-[4px] font-bold text-[12px] whitespace-nowrap">Sign
-        Up</a>
+        Up</router-link>
 
       <!-- Mobile Menu Toggle -->
       <button @click="isMobileMenuOpen = !isMobileMenuOpen"
