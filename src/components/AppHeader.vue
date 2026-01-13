@@ -6,8 +6,8 @@ const isMobileMenuOpen = ref(false)
 
 const tradeDropdown = {
   basic: [
-    { name: 'Spot', desc: 'Buy and sell on the Spot market with advanced tools', icon: '📊' },
-    { name: 'Margin', desc: 'Increase your profits with leverage', icon: '📈' },
+    { name: 'Spot', desc: 'Buy and sell on the Spot market with advanced tools', icon: '📊', path: '/trade/BTC_USDT' },
+    { name: 'Margin', desc: 'Increase your profits with leverage', icon: '📈', path: '/margin' },
     { name: 'P2P', desc: 'Buy & sell cryptocurrencies using bank transfer and 800+ options', icon: '👥' },
     { name: 'Convert & Block Trade', desc: 'The easiest way to trade at all sizes', icon: '🔄' }
   ],
@@ -96,9 +96,8 @@ const closeMobileMenu = () => {
               <div>
                 <h3 class="text-[#848E9C] text-xs font-semibold mb-4 uppercase">Basic</h3>
                 <div class="space-y-1">
-                  <component :is="item.name === 'Spot' ? 'router-link' : 'a'" v-for="item in tradeDropdown.basic"
-                    :key="item.name" :to="item.name === 'Spot' ? '/trade/BTC_USDT' : undefined"
-                    :href="item.name !== 'Spot' ? '#' : undefined"
+                  <component :is="item.path ? 'router-link' : 'a'" v-for="item in tradeDropdown.basic" :key="item.name"
+                    :to="item.path" :href="!item.path ? '#' : undefined"
                     class="flex items-start gap-3 p-3 rounded hover:bg-[#2b3139] transition-colors group">
                     <span class="text-xl mt-0.5">{{ item.icon }}</span>
                     <div class="flex-1">

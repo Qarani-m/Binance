@@ -34,6 +34,11 @@ const router = createRouter({
       component: () => import("@/views/OptionsTradingPage.vue"),
     },
     {
+      path: "/margin",
+      name: "margin-trading",
+      component: () => import("@/views/MarginTradingPage.vue"),
+    },
+    {
       path: "/earn",
       name: "earn-overview",
       component: () => import("@/views/EarnOverviewPage.vue"),
