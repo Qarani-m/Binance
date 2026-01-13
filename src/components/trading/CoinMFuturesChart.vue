@@ -8,8 +8,9 @@ const SYMBOL = 'BTCUSDT'
 const INTERVAL_MS = 60_000 // 1m candles
 const MAX_CANDLES = 300
 
-const chartWidth = 1200
-const chartHeight = 500
+const containerRef = ref(null)
+const chartWidth = ref(1200)
+const chartHeight = ref(500)
 const volumeHeight = 50
 const padding = { top: 10, right: 70, bottom: 10, left: 0 }
 
@@ -19,6 +20,7 @@ const padding = { top: 10, right: 70, bottom: 10, left: 0 }
 const candles = ref([])
 let currentCandle = null
 let ws = null
+let resizeObserver = null
 
 /* =====================
    BINANCE REST (HISTORY)
@@ -110,7 +112,7 @@ const priceRange = computed(() => {
 
 const scaleY = price => {
     const range = priceRange.value.max - priceRange.value.min
-    const availableHeight = chartHeight - padding.top - padding.bottom
+    const availableHeight = chartHeight.value - padding.top - padding.bottom
     if (range === 0) return availableHeight / 2
 
     return availableHeight - ((price - priceRange.value.min) / range) * availableHeight
@@ -132,7 +134,7 @@ const yAxisTicks = computed(() => {
 })
 
 const candleSpacing = computed(
-    () => (chartWidth - padding.left - padding.right) / candles.value.length
+    () => (chartWidth.value - padding.left - padding.right) / Math.max(candles.value.length, 1)
 )
 
 const candleWidth = computed(() => candleSpacing.value * 0.7)
@@ -171,15 +173,28 @@ const ohlc = computed(() => ({
 onMounted(async () => {
     await loadHistoricalCandles()
     connectWS()
+
+    if (containerRef.value) {
+        resizeObserver = new ResizeObserver(entries => {
+            const entry = entries[0]
+            if (entry) {
+                const { width, height } = entry.contentRect
+                chartWidth.value = width
+                chartHeight.value = height
+            }
+        })
+        resizeObserver.observe(containerRef.value)
+    }
 })
 
 onUnmounted(() => {
     if (ws) ws.close()
+    if (resizeObserver) resizeObserver.disconnect()
 })
 </script>
 
 <template>
-    <div class="w-full h-full bg-[#181A20] flex flex-col">
+    <div ref="containerRef" class="w-full h-full bg-[#181A20] flex flex-col">
         <!-- OHLC BAR -->
         <div class="flex gap-4 px-4 py-2 text-[11px] border-b border-[#2B3139]">
             <span>O: <span :class="ohlc.close >= ohlc.open ? 'text-[#0ECB81]' : 'text-[#F6465D]'">{{
@@ -191,7 +206,7 @@ onUnmounted(() => {
             <span>C: <span :class="ohlc.close >= ohlc.open ? 'text-[#0ECB81]' : 'text-[#F6465D]'">{{
                 ohlc.close?.toFixed(1) }}</span></span>
             <span>CHANGE: <span :class="ohlc.change >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]'">{{ ohlc.change
-                    }}%</span></span>
+            }}%</span></span>
             <span class="text-[#FCD535]">MA7 {{ ma7.at(-1)?.toFixed(1) }}</span>
             <span class="text-[#E611FF]">MA25 {{ ma25.at(-1)?.toFixed(1) }}</span>
             <span class="text-[#EAECEF]">MA99 {{ ma99.at(-1)?.toFixed(1) }}</span>
