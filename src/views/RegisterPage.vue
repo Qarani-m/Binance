@@ -1,13 +1,16 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuth } from '../composables/useAuth'
 
 const router = useRouter()
+const { login } = useAuth()
 const emailPhone = ref('')
 const acceptTerms = ref(true)
 
 const nextStep = () => {
     // In a real app we'd validate and register
+    login(emailPhone.value || 'newuser@example.com')
     router.push('/dashboard')
 }
 </script>

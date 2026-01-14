@@ -1,25 +1,39 @@
 <script setup>
-import { ref } from 'vue'
+import { computed } from 'vue'
 
-const asks = ref([
-    { price: 91548.9, size: 11, sum: 138 },
-    { price: 91540.5, size: 1, sum: 127 },
-    { price: 91534.1, size: 11, sum: 126 },
-    { price: 91531.2, size: 1, sum: 115 },
-    { price: 91530.2, size: 56, sum: 114 },
-    { price: 91530.1, size: 17, sum: 58 },
-    { price: 91522.9, size: 41, sum: 41 },
-])
+const props = defineProps({
+    asks: { type: Array, default: () => [] },
+    bids: { type: Array, default: () => [] },
+    ticker: { type: Object, default: () => ({ price: 91538.8 }) }
+})
 
-const bids = ref([
-    { price: 91522.8, size: 111, sum: 111 },
-    { price: 91522.7, size: 8, sum: 119 },
-    { price: 91514.3, size: 49, sum: 168 },
-    { price: 91514.2, size: 78, sum: 246 },
-    { price: 91514.1, size: 49, sum: 295 },
-    { price: 91514.0, size: 101, sum: 396 },
-    { price: 91513.7, size: 49, sum: 445 },
-])
+const processedAsks = computed(() => {
+    let sum = 0
+    // Asks are typically sorted ascending (lowest ask first). 
+    // For visual stack, we often want them reversed (highest on top) or standard depending on design.
+    // Binance standard: Asks (Red) are above price, ordered lowest price at bottom (closest to spread).
+    // The incoming data from composable is usually [ [price, qty], ... ].
+    // We'll process them to add 'sum'.
+    return props.asks.map(a => {
+        sum += a.size
+        return { ...a, sum: parseFloat(sum.toFixed(3)) }
+    })
+})
+
+const processedBids = computed(() => {
+    let sum = 0
+    return props.bids.map(b => {
+        sum += b.size
+        return { ...b, sum: parseFloat(sum.toFixed(3)) }
+    })
+})
+
+// Calculate max sum for background bars (using top 15 or so visible items)
+const maxSum = computed(() => {
+    const maxAsk = processedAsks.value.length > 0 ? processedAsks.value[processedAsks.value.length - 1].sum : 100
+    const maxBid = processedBids.value.length > 0 ? processedBids.value[processedBids.value.length - 1].sum : 100
+    return Math.max(maxAsk, maxBid, 1)
+})
 </script>
 
 <template>
@@ -48,10 +62,19 @@ const bids = ref([
 
         <!-- Asks -->
         <div class="flex-1 overflow-hidden flex flex-col-reverse justify-end">
-            <div v-for="(ask, i) in asks" :key="'ask-' + i"
+            <!-- Reverse array because in DOM, flex-col-reverse puts the LAST item at the TOP ?? 
+                 Wait, flex-col-reverse puts the FIRST item at the BOTTOM.
+                 Asks are usually [lowest, ..., highest]. 
+                 We want lowest at bottom (closest to spread). 
+                 So rendering [0] at bottom is correct if we use flex-col-reverse?
+                 Actually, simpler to render normally but layout them out.
+                 Let's stick to the existing layout logic which used flex-col-reverse.
+                 If asks are [lowestPrice, higherPrice...], flex-col-reverse puts lowestPrice (index 0) at the BOTTOM. Correct.
+            -->
+            <div v-for="(ask, i) in processedAsks.slice(0, 15)" :key="'ask-' + i"
                 class="relative grid grid-cols-3 px-3 py-[3px] hover:bg-[#2B3139] cursor-pointer group leading-none h-5">
                 <div class="absolute inset-y-0 right-0 bg-[#F6465D]/15 pointer-events-none transition-all duration-300"
-                    :style="{ width: (ask.sum / 150 * 100) + '%' }"></div>
+                    :style="{ width: (ask.sum / maxSum * 100) + '%' }"></div>
                 <div class="relative z-10 text-[#F6465D] font-mono">{{ ask.price.toFixed(1) }}</div>
                 <div class="relative z-10 text-right text-[#EAECEF] font-mono">{{ ask.size }}</div>
                 <div class="relative z-10 text-right text-[#EAECEF] font-mono">{{ ask.sum }}</div>
@@ -61,20 +84,25 @@ const bids = ref([
         <!-- Current Price -->
         <div class="px-3 py-2 flex items-center justify-between bg-[#2B3139]/20 border-y border-[#2B3139]">
             <div class="flex items-center gap-2">
-                <span class="text-[18px] font-bold text-[#0ECB81] font-mono leading-none">91,538.8</span>
-                <svg class="w-4 h-4 text-[#0ECB81]" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M7 14l5-5 5 5z" />
+                <span :class="ticker.change >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]'"
+                    class="text-[18px] font-bold font-mono leading-none">
+                    {{ ticker.price?.toLocaleString(undefined, { minimumFractionDigits: 1 }) }}
+                </span>
+                <svg :class="ticker.change >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]'" class="w-4 h-4"
+                    fill="currentColor" viewBox="0 0 24 24">
+                    <path v-if="ticker.change >= 0" d="M7 14l5-5 5 5z" />
+                    <path v-else d="M7 10l5 5 5-5z" />
                 </svg>
             </div>
-            <div class="text-[#848E9C] text-[11px] font-mono">≈ 91,518.9</div>
+            <div class="text-[#848E9C] text-[11px] font-mono">≈ {{ ticker.price?.toFixed(1) }}</div>
         </div>
 
         <!-- Bids -->
         <div class="flex-1 overflow-hidden">
-            <div v-for="(bid, i) in bids" :key="'bid-' + i"
+            <div v-for="(bid, i) in processedBids.slice(0, 15)" :key="'bid-' + i"
                 class="relative grid grid-cols-3 px-3 py-[3px] group hover:bg-[#2B3139] cursor-pointer leading-none h-5">
                 <div class="absolute inset-y-0 right-0 bg-[#0ECB81]/15 pointer-events-none transition-all duration-300"
-                    :style="{ width: (bid.sum / 500 * 100) + '%' }"></div>
+                    :style="{ width: (bid.sum / maxSum * 100) + '%' }"></div>
                 <div class="relative z-10 text-[#0ECB81] font-mono">{{ bid.price.toFixed(1) }}</div>
                 <div class="relative z-10 text-right text-[#EAECEF] font-mono">{{ bid.size }}</div>
                 <div class="relative z-10 text-right text-[#EAECEF] font-mono">{{ bid.sum }}</div>

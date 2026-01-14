@@ -1,21 +1,29 @@
 <script setup>
 import { ref } from 'vue'
+import { useAuth } from '@/composables/useAuth'
 
+const { isLoggedIn } = useAuth()
 const activeTab = ref('limit')
 const contSize = ref('')
 const price = ref('91,538.8')
+const marginMode = ref('Cross')
+const leverage = ref('20x')
+const showTPSL = ref(false)
+const showReduceOnly = ref(false)
 </script>
 
 <template>
-    <div class="flex-1 flex flex-col bg-[#181A20] select-none text-[11px] overflow-hidden">
+    <div class="flex-1 flex flex-col bg-[#181A20] select-none text-[11px] overflow-hidden overflow-y-auto no-scrollbar">
         <!-- Section 6: Order Entry Form -->
         <div class="p-3 border-b border-[#2B3139] flex-none">
             <!-- Leverage/Cross Controls -->
             <div class="flex gap-1 h-7 mb-4">
                 <button
-                    class="flex-1 bg-[#2B3139] hover:bg-[#323a45] text-white rounded transition-colors font-medium">Cross</button>
+                    class="flex-1 bg-[#2B3139] hover:bg-[#323a45] text-white rounded transition-colors font-medium">{{
+                    marginMode }}</button>
                 <button
-                    class="flex-1 bg-[#2B3139] hover:bg-[#323a45] text-white rounded transition-colors font-medium">20x</button>
+                    class="flex-1 bg-[#2B3139] hover:bg-[#323a45] text-white rounded transition-colors font-medium">{{
+                    leverage }}</button>
                 <button
                     class="w-[28px] bg-[#2B3139] hover:bg-[#323a45] text-white rounded transition-colors flex items-center justify-center">
                     <svg class="w-3.5 h-3.5 text-[#848E9C]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -51,7 +59,8 @@ const price = ref('91,538.8')
             <div class="space-y-4">
                 <div class="flex justify-between items-center px-0.5">
                     <span class="text-[#848E9C]">Avbl <span class="text-[#EAECEF] font-medium">- BTC</span></span>
-                    <svg class="w-3.5 h-3.5 text-[#848E9C]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-3.5 h-3.5 text-[#848E9C] cursor-pointer hover:text-white" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
                         <path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" stroke-width="2" />
                     </svg>
                 </div>
@@ -62,9 +71,11 @@ const price = ref('91,538.8')
                     </div>
                     <div class="relative group">
                         <input v-model="price" type="text"
-                            class="w-full bg-[#2B3139] border border-transparent focus:border-[#FCD535] rounded px-3 py-2 text-right font-mono text-white text-[13px] outline-none">
+                            class="w-full bg-[#2B3139] border border-transparent focus:border-[#FCD535] rounded px-3 py-2 text-right font-mono text-white text-[13px] outline-none transition-all">
                         <span
-                            class="absolute right-[45px] top-1/2 -translate-y-1/2 text-[#848E9C] group-focus-within:text-white font-medium">USD</span>
+                            class="absolute left-2 top-1/2 -translate-y-1/2 text-[#848E9C] pointer-events-none">Price</span>
+                        <span
+                            class="absolute right-[45px] top-1/2 -translate-y-1/2 text-[#848E9C] font-medium transition-colors group-focus-within:text-white">USD</span>
                         <button
                             class="absolute right-1 top-1/2 -translate-y-1/2 text-[10px] text-[#848E9C] hover:text-white px-2 py-0.5 bg-[#181A20] rounded border border-[#2B3139]">BBO</button>
                     </div>
@@ -76,7 +87,9 @@ const price = ref('91,538.8')
                     </div>
                     <div class="relative group">
                         <input v-model="contSize" type="text" placeholder="1 Cont = 100 USD"
-                            class="w-full bg-[#2B3139] border border-transparent focus:border-[#FCD535] rounded px-3 py-2 text-right font-mono text-white text-[13px] outline-none">
+                            class="w-full bg-[#2B3139] border border-transparent focus:border-[#FCD535] rounded px-3 py-2 text-right font-mono text-white text-[13px] outline-none transition-all">
+                        <span
+                            class="absolute left-2 top-1/2 -translate-y-1/2 text-[#848E9C] pointer-events-none">Size</span>
                         <div
                             class="absolute right-2 top-1/2 -translate-y-1/2 text-white flex items-center gap-1 font-medium bg-[#181A20] px-1.5 py-0.5 rounded cursor-pointer border border-[#2B3139]">
                             Cont <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -86,34 +99,82 @@ const price = ref('91,538.8')
                     </div>
                 </div>
 
-                <!-- Slider -->
-                <div class="relative pt-2 pb-6 flex items-center">
-                    <div class="w-[1px] h-2.5 bg-[#474D57] absolute left-0"></div>
-                    <div class="w-[1px] h-2.5 bg-[#474D57] absolute left-1/4"></div>
-                    <div class="w-[1px] h-2.5 bg-[#474D57] absolute left-1/2"></div>
-                    <div class="w-[1px] h-2.5 bg-[#474D57] absolute left-3/4"></div>
-                    <div class="w-[1px] h-2.5 bg-[#474D57] absolute left-full"></div>
+                <!-- Percentage Slider -->
+                <div class="relative pt-2 pb-6 flex items-center group">
                     <div class="w-full h-[2px] bg-[#2B3139] rounded relative">
                         <div
-                            class="absolute -top-1 left-0 w-2.5 h-2.5 bg-[#2B3139] border border-[#474D57] rotate-45 transform">
+                            class="absolute -top-1.5 left-0 w-3 h-3 bg-[#EAECEF] border border-[#181A20] rotate-45 cursor-pointer z-10">
                         </div>
+                        <div v-for="i in 4" :key="i"
+                            class="absolute top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-[#474D57] rounded-full hover:bg-primary transition-colors cursor-pointer"
+                            :style="{ left: (i * 25) + '%' }"></div>
                     </div>
                 </div>
 
-                <!-- CTA Buttons -->
-                <div class="space-y-2 pt-2">
-                    <router-link to="/register"
-                        class="w-full bg-[#FCD535] hover:bg-[#FCD535]/90 text-black font-bold py-2.5 rounded transition-colors text-[14px] flex items-center justify-center">Register
-                        Now</router-link>
-                    <router-link to="/login"
-                        class="w-full bg-[#2B3139] hover:bg-[#323a45] text-[#EAECEF] font-bold py-2.5 rounded transition-colors text-[14px] flex items-center justify-center">Log
-                        In</router-link>
+                <!-- TP/SL and Reduce Only -->
+                <div class="space-y-4 pt-1">
+                    <div class="flex items-center gap-2">
+                        <input v-model="showTPSL" type="checkbox" id="tpsl-coinm" class="accent-primary w-3 h-3">
+                        <label for="tpsl-coinm"
+                            class="text-[#848E9C] cursor-pointer hover:text-white transition-colors">TP/SL</label>
+                    </div>
+
+                    <div v-if="isLoggedIn" class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center gap-2">
+                                <input v-model="showReduceOnly" type="checkbox" id="reduce-coinm"
+                                    class="accent-primary w-3 h-3">
+                                <label for="reduce-coinm"
+                                    class="text-[#848E9C] cursor-pointer hover:text-white transition-colors">Reduce-Only</label>
+                            </div>
+                            <div class="flex items-center gap-1 text-[#848E9C]">
+                                <span>TIF</span>
+                                <span class="text-white font-medium">GTC</span>
+                                <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M7 10l5 5 5-5z" />
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- CTA Buttons -->
+                        <div class="flex gap-2">
+                            <button
+                                class="flex-1 bg-[#02C076] hover:opacity-90 text-white font-bold py-2.5 rounded transition-all transform active:scale-[0.98] text-[13px]">Buy/Long</button>
+                            <button
+                                class="flex-1 bg-[#F6465D] hover:opacity-90 text-white font-bold py-2.5 rounded transition-all transform active:scale-[0.98] text-[13px]">Sell/Short</button>
+                        </div>
+
+                        <div
+                            class="grid grid-cols-2 gap-x-4 gap-y-1.5 text-[10px] text-[#848E9C] border-t border-[#2B3139] pt-3">
+                            <div class="flex justify-between"><span>Liq Price</span><span class="text-[#EAECEF]">--
+                                    BTC</span></div>
+                            <div class="flex justify-between"><span>Liq Price</span><span class="text-[#EAECEF]">--
+                                    BTC</span></div>
+                            <div class="flex justify-between"><span>Cost</span><span class="text-[#EAECEF]">0.0000
+                                    BTC</span></div>
+                            <div class="flex justify-between"><span>Cost</span><span class="text-[#EAECEF]">0.0000
+                                    BTC</span></div>
+                            <div class="flex justify-between"><span>Max</span><span class="text-[#EAECEF]">0.000
+                                    BTC</span></div>
+                            <div class="flex justify-between"><span>Max</span><span class="text-[#EAECEF]">0.000
+                                    BTC</span></div>
+                        </div>
+                    </div>
+
+                    <div v-else class="space-y-2 pt-2">
+                        <router-link to="/register"
+                            class="w-full bg-[#FCD535] hover:bg-[#FCD535]/90 text-black font-bold py-2.5 rounded transition-colors text-[14px] flex items-center justify-center">Register
+                            Now</router-link>
+                        <router-link to="/login"
+                            class="w-full bg-[#2B3139] hover:bg-[#323a45] text-[#EAECEF] font-bold py-2.5 rounded transition-colors text-[14px] flex items-center justify-center">Log
+                            In</router-link>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Section 7: Account Information -->
-        <div class="mt-auto p-3 border-t border-[#2B3139] bg-[#181A20]">
+        <div v-if="isLoggedIn" class="mt-auto p-3 border-t border-[#2B3139] bg-[#181A20]">
             <div class="flex justify-between items-center mb-4">
                 <span class="text-[#EAECEF] font-bold text-[13px]">Account</span>
                 <svg class="w-3.5 h-3.5 text-[#848E9C] cursor-pointer hover:text-white" fill="none"
@@ -125,10 +186,9 @@ const price = ref('91,538.8')
                 <div class="flex justify-between items-center">
                     <span class="text-[#848E9C]">Margin Ratio</span>
                     <div class="flex items-center gap-1.5">
-                        <svg class="w-3.5 h-3.5 text-[#0ECB81]" viewBox="0 0 24 24" fill="currentColor">
-                            <path
-                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z" />
-                        </svg>
+                        <div class="w-8 h-1 bg-[#2B3139] rounded-full relative overflow-hidden">
+                            <div class="absolute inset-0 bg-[#0ECB81] w-[2%]"></div>
+                        </div>
                         <span class="text-[#0ECB81] font-mono font-medium text-[12px]">0.00%</span>
                     </div>
                 </div>
@@ -143,16 +203,23 @@ const price = ref('91,538.8')
             </div>
             <div class="flex gap-2">
                 <button
-                    class="flex-1 bg-[#2B3139] hover:bg-[#323a45] text-white py-1.5 rounded transition-colors uppercase text-[10px] font-bold">Transfer</button>
+                    class="flex-1 bg-[#2B3139] hover:bg-[#323a45] text-white py-1.5 rounded transition-colors uppercase text-[9px] font-bold">Transfer</button>
                 <button
-                    class="flex-1 bg-[#2B3139] hover:bg-[#323a45] text-white py-1.5 rounded transition-colors uppercase text-[10px] font-bold">Buy
+                    class="flex-1 bg-[#2B3139] hover:bg-[#323a45] text-white py-1.5 rounded transition-colors uppercase text-[9px] font-bold">Buy
                     Crypto</button>
                 <button
-                    class="flex-1 bg-[#2B3139] hover:bg-[#323a45] text-white py-1.5 rounded transition-colors uppercase text-[10px] font-bold">Swap</button>
+                    class="flex-1 bg-[#2B3139] hover:bg-[#323a45] text-white py-1.5 rounded transition-colors uppercase text-[9px] font-bold">Swap</button>
             </div>
         </div>
     </div>
 </template>
+
+<style scoped>
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+</style>
+
 
 <style scoped>
 .no-scrollbar::-webkit-scrollbar {

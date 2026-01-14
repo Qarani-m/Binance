@@ -1,25 +1,33 @@
 <script setup>
-import { ref } from 'vue'
+import { computed } from 'vue'
 
-const asks = ref([
-    { price: 90623.2, size: 0.002, sum: 13.147 },
-    { price: 90622.8, size: 0.002, sum: 13.145 },
-    { price: 90622.7, size: 0.187, sum: 13.143 },
-    { price: 90622.6, size: 0.007, sum: 12.956 },
-    { price: 90622.3, size: 0.115, sum: 12.949 },
-    { price: 90622.2, size: 0.041, sum: 12.834 },
-    { price: 90622.1, size: 12.794, sum: 12.793 },
-])
+const props = defineProps({
+    asks: { type: Array, default: () => [] },
+    bids: { type: Array, default: () => [] },
+    ticker: { type: Object, default: () => ({ price: 90622.0 }) }
+})
 
-const bids = ref([
-    { price: 90622.0, size: 4.905, sum: 4.905 },
-    { price: 90621.9, size: 0.006, sum: 4.911 },
-    { price: 90621.8, size: 0.007, sum: 4.918 },
-    { price: 90621.7, size: 0.557, sum: 5.475 },
-    { price: 90621.8, size: 0.088, sum: 5.563 },
-    { price: 90621.5, size: 0.005, sum: 5.568 },
-    { price: 90621.4, size: 0.002, sum: 5.570 },
-])
+const processedAsks = computed(() => {
+    let sum = 0
+    return props.asks.map(a => {
+        sum += a.size
+        return { ...a, sum: parseFloat(sum.toFixed(3)) }
+    })
+})
+
+const processedBids = computed(() => {
+    let sum = 0
+    return props.bids.map(b => {
+        sum += b.size
+        return { ...b, sum: parseFloat(sum.toFixed(3)) }
+    })
+})
+
+const maxSum = computed(() => {
+    const maxAsk = processedAsks.value.length > 0 ? processedAsks.value[processedAsks.value.length - 1].sum : 10
+    const maxBid = processedBids.value.length > 0 ? processedBids.value[processedBids.value.length - 1].sum : 10
+    return Math.max(maxAsk, maxBid, 1)
+})
 </script>
 
 <template>
@@ -44,33 +52,38 @@ const bids = ref([
 
         <!-- Asks -->
         <div class="flex-1 overflow-hidden flex flex-col-reverse justify-end">
-            <div v-for="(ask, i) in asks" :key="'ask-' + i"
+            <div v-for="(ask, i) in processedAsks.slice(0, 15)" :key="'ask-' + i"
                 class="relative grid grid-cols-3 px-3 py-[3px] hover:bg-[#2B3139] cursor-pointer group leading-none h-5">
                 <div class="absolute inset-y-0 right-0 bg-[#F6465D]/15 pointer-events-none transition-all duration-300"
-                    :style="{ width: (ask.sum / 15 * 100) + '%' }"></div>
+                    :style="{ width: (ask.sum / maxSum * 100) + '%' }"></div>
                 <div class="relative z-10 text-[#F6465D] font-mono">{{ ask.price.toFixed(1) }}</div>
                 <div class="relative z-10 text-right text-[#EAECEF] font-mono">{{ ask.size.toFixed(3) }}</div>
-                <div class="relative z-10 text-right text-[#EAECEF] font-mono">{{ ask.sum.toFixed(3) }}</div>
+                <div class="relative z-10 text-right text-[#EAECEF] font-mono">{{ ask.sum }}</div>
             </div>
         </div>
 
         <!-- Current Price -->
         <div class="px-3 py-2 flex items-center justify-between bg-[#2B3139]/20 border-y border-[#2B3139]">
             <div class="flex items-center gap-2">
-                <span class="text-[18px] font-bold text-[#F6465D] font-mono leading-none">90,622.0</span>
-                <svg class="w-3.5 h-3.5 text-[#F6465D]" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M7 10l5 5 5-5z" />
+                <span :class="ticker.change >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]'"
+                    class="text-[18px] font-bold font-mono leading-none">
+                    {{ ticker.price?.toLocaleString(undefined, { minimumFractionDigits: 1 }) }}
+                </span>
+                <svg :class="ticker.change >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]'" class="w-3.5 h-3.5"
+                    fill="currentColor" viewBox="0 0 24 24">
+                    <path v-if="ticker.change >= 0" d="M7 14l5-5 5 5z" />
+                    <path v-else d="M7 10l5 5 5-5z" />
                 </svg>
             </div>
-            <div class="text-[#848E9C] text-[11px] font-mono">≈ 90,622.0</div>
+            <div class="text-[#848E9C] text-[11px] font-mono">≈ {{ ticker.price?.toFixed(1) }}</div>
         </div>
 
         <!-- Bids -->
         <div class="flex-1 overflow-hidden">
-            <div v-for="(bid, i) in bids" :key="'bid-' + i"
+            <div v-for="(bid, i) in processedBids.slice(0, 15)" :key="'bid-' + i"
                 class="relative grid grid-cols-3 px-3 py-[3px] group hover:bg-[#2B3139] cursor-pointer leading-none h-5">
                 <div class="absolute inset-y-0 right-0 bg-[#0ECB81]/15 pointer-events-none transition-all duration-300"
-                    :style="{ width: (bid.sum / 15 * 100) + '%' }"></div>
+                    :style="{ width: (bid.sum / maxSum * 100) + '%' }"></div>
                 <div class="relative z-10 text-[#0ECB81] font-mono">{{ bid.price.toFixed(1) }}</div>
                 <div class="relative z-10 text-right text-[#EAECEF] font-mono">{{ bid.size.toFixed(3) }}</div>
                 <div class="relative z-10 text-right text-[#EAECEF] font-mono">{{ bid.sum.toFixed(3) }}</div>

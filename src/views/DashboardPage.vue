@@ -2,9 +2,11 @@
 import AppHeader from '@/components/AppHeader.vue'
 import AppFooter from '@/components/AppFooter.vue'
 import MarketTabs from '@/components/market/MarketTabs.vue'
+import DepositSidebar from '@/components/dashboard/DepositSidebar.vue'
 import { ref } from 'vue'
 
 const hiddenBalance = ref(false)
+const showDepositSidebar = ref(false)
 </script>
 
 <template>
@@ -44,13 +46,14 @@ const hiddenBalance = ref(false)
                 </div>
                 <div class="flex items-end gap-2 mb-8">
                     <div class="text-[32px] font-bold tracking-tight">{{ hiddenBalance ? '******' : '0.00000000' }}
-                        <span class="text-[20px] text-[#848E9C] font-medium ml-1">BTC</span></div>
+                        <span class="text-[20px] text-[#848E9C] font-medium ml-1">BTC</span>
+                    </div>
                     <div class="text-[#848E9C] font-medium mb-1.5 pl-2 text-[14px]">≈ {{ hiddenBalance ? '******' :
                         '$0.00' }}</div>
                 </div>
 
                 <div class="flex items-center gap-3">
-                    <button
+                    <button @click="showDepositSidebar = true"
                         class="bg-primary hover:bg-[#F0B90B] text-black px-6 py-2.5 rounded-lg font-bold text-sm transition-all transform active:scale-95">Deposit</button>
                     <button
                         class="bg-[#2B3139] text-white hover:bg-[#3A4049] px-6 py-2.5 rounded-lg font-bold text-sm transition-all transform active:scale-95">Withdraw</button>
@@ -90,6 +93,9 @@ const hiddenBalance = ref(false)
         </main>
 
         <AppFooter />
+
+        <!-- Deposit Sidebar -->
+        <DepositSidebar :isOpen="showDepositSidebar" @close="showDepositSidebar = false" />
     </div>
 </template>
 

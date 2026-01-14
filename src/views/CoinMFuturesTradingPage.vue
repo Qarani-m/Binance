@@ -7,8 +7,10 @@ import CoinMFuturesOrderBook from '@/components/trading/CoinMFuturesOrderBook.vu
 import CoinMFuturesTrades from '@/components/trading/CoinMFuturesTrades.vue'
 import CoinMFuturesTradeForm from '@/components/trading/CoinMFuturesTradeForm.vue'
 import CoinMFuturesChart from '@/components/trading/CoinMFuturesChart.vue'
+import { useBinanceData } from '@/composables/useBinanceData'
 
 const activeTab = ref('Chart')
+const { ticker, orderBook, currentPrice } = useBinanceData('BTCUSDT')
 </script>
 
 <template>
@@ -26,7 +28,7 @@ const activeTab = ref('Chart')
         <main class="flex-1 flex flex-col overflow-y-auto lg:overflow-hidden">
             <!-- Section 3: Contract Header & Stats -->
             <div class="overflow-x-auto no-scrollbar">
-                <CoinMFuturesHeader />
+                <CoinMFuturesHeader :ticker="ticker" />
             </div>
 
             <!-- Trading Layout: Charts and Sidebars -->
@@ -211,7 +213,7 @@ const activeTab = ref('Chart')
                     <!-- Order Book -->
                     <div
                         class="h-[400px] lg:h-[40%] bg-[#181A20] border-b border-[#2B3139] flex flex-col flex-none overflow-hidden">
-                        <CoinMFuturesOrderBook />
+                        <CoinMFuturesOrderBook :asks="orderBook.asks" :bids="orderBook.bids" :ticker="ticker" />
                     </div>
                     <!-- Order Entry -->
                     <div class="h-auto lg:flex-1 bg-[#181A20] flex flex-col p-4 lg:p-0">

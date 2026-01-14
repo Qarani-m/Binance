@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
+import { useAuth } from "@/composables/useAuth";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -119,11 +120,36 @@ const router = createRouter({
       component: () => import("@/views/RegisterPage.vue"),
     },
     {
+      path: "/wallet/deposit/crypto",
+      name: "deposit-crypto",
+      component: () => import("@/views/DepositCryptoPage.vue"),
+    },
+    {
       path: "/price/:ticker",
       name: "price-page",
       component: () => import("@/views/PricePage.vue"),
     },
   ],
+});
+
+router.beforeEach((to, from, next) => {
+  const { isLoggedIn } = useAuth();
+  const publicPages = ["/", "/login", "/register", "/markets"];
+  const authRequired =
+    !publicPages.includes(to.path) &&
+    !to.path.startsWith("/trade/") &&
+    !to.path.startsWith("/price/");
+  const isAuthPage = ["/login", "/register"].includes(to.path);
+
+  if (authRequired && !isLoggedIn.value) {
+    return next("/login");
+  }
+
+  if (isAuthPage && isLoggedIn.value) {
+    return next("/dashboard");
+  }
+
+  next();
 });
 
 export default router;

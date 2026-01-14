@@ -2,7 +2,10 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 
+import { useAuth } from '../composables/useAuth'
+
 const router = useRouter()
+const { login } = useAuth()
 const step = ref(1) // 1: Email, 2: Password, 3: Verification, 4: StayLoggedIn
 const emailPhone = ref('')
 const password = ref('')
@@ -33,6 +36,7 @@ const nextStep = () => {
 }
 
 const finishLogin = () => {
+    login(emailPhone.value || 'user@example.com')
     router.push('/dashboard')
 }
 </script>

@@ -1,6 +1,19 @@
 <script setup>
 const props = defineProps({
-    contract: { type: String, default: 'BTCUSD CM' }
+    contract: { type: String, default: 'BTCUSD CM' },
+    ticker: {
+        type: Object,
+        default: () => ({
+            price: 91538.8,
+            change: 0.51,
+            high: 92921.4,
+            low: 90528.6,
+            vol: 93893,
+            volQuote: 9389300,
+            markPrice: 91518.9,
+            indexPrice: 90565.1
+        })
+    }
 })
 </script>
 
@@ -19,7 +32,7 @@ const props = defineProps({
                     ₿</div>
                 <div class="flex flex-col">
                     <div class="flex items-center gap-1.5 leading-none">
-                        <span class="text-[20px] font-bold text-white">BTCUSD CM</span>
+                        <span class="text-[20px] font-bold text-white">{{ contract }}</span>
                         <span
                             class="bg-[#2B3139] text-[#848E9C] text-[10px] px-1.5 py-0.5 rounded font-medium border border-[#2B3139]">Ctty
                             0327</span>
@@ -34,14 +47,21 @@ const props = defineProps({
         <!-- Center: Price & Change -->
         <div class="flex flex-col mr-10 flex-none leading-none">
             <div class="flex items-center gap-2 mb-1">
-                <span class="text-[22px] font-bold text-[#0ECB81] font-mono">91,538.8</span>
-                <svg class="w-4 h-4 text-[#0ECB81]" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M7 14l5-5 5 5z" />
+                <span :class="ticker.change >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]'"
+                    class="text-[22px] font-bold font-mono">
+                    {{ ticker.price?.toLocaleString(undefined, { minimumFractionDigits: 1 }) }}
+                </span>
+                <svg :class="ticker.change >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]'" class="w-4 h-4"
+                    fill="currentColor" viewBox="0 0 24 24">
+                    <path v-if="ticker.change >= 0" d="M7 14l5-5 5 5z" />
+                    <path v-else d="M7 10l5 5 5-5z" />
                 </svg>
             </div>
             <div class="flex items-center gap-2 text-[12px]">
-                <span class="text-[#0ECB81] font-mono">+0.51% ↑</span>
-                <span class="text-[#848E9C]">≈ 100 = $1,538.8</span>
+                <span :class="ticker.change >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]'" class="font-mono">
+                    {{ ticker.change >= 0 ? '+' : '' }}{{ ticker.change }}%
+                </span>
+                <span class="text-[#848E9C]">≈ 100 = ${{ (ticker.price / 60)?.toFixed(1) }}</span>
             </div>
         </div>
 
@@ -49,29 +69,29 @@ const props = defineProps({
         <div class="flex items-center gap-10 flex-1 min-w-0 h-10 overflow-hidden">
             <div class="flex flex-col flex-none gap-1 leading-none">
                 <span class="text-[#848E9C] text-[11px]">Mark</span>
-                <span
-                    class="text-white text-[12px] font-mono underline decoration-dotted decoration-[#848E9C]">91,518.9</span>
+                <span class="text-white text-[12px] font-mono underline decoration-dotted decoration-[#848E9C]">{{
+                    ticker.markPrice?.toLocaleString() }}</span>
             </div>
             <div class="flex flex-col flex-none gap-1 leading-none">
                 <span class="text-[#848E9C] text-[11px]">Index</span>
-                <span
-                    class="text-white text-[12px] font-mono underline decoration-dotted decoration-[#848E9C]">90,565.1</span>
+                <span class="text-white text-[12px] font-mono underline decoration-dotted decoration-[#848E9C]">{{
+                    ticker.indexPrice?.toLocaleString() }}</span>
             </div>
             <div class="flex flex-col flex-none gap-1 leading-none">
                 <span class="text-[#848E9C] text-[11px]">24h High</span>
-                <span class="text-white text-[12px] font-mono">92,921.4</span>
+                <span class="text-white text-[12px] font-mono">{{ ticker.high?.toLocaleString() }}</span>
             </div>
             <div class="flex flex-col flex-none gap-1 leading-none">
                 <span class="text-[#848E9C] text-[11px]">24h Low</span>
-                <span class="text-white text-[12px] font-mono">90,528.6</span>
+                <span class="text-white text-[12px] font-mono">{{ ticker.low?.toLocaleString() }}</span>
             </div>
             <div class="flex flex-col flex-none gap-1 leading-none text-right">
                 <span class="text-[#848E9C] text-[11px]">24h Vol(Cont)</span>
-                <span class="text-white text-[12px] font-mono">93,893</span>
+                <span class="text-white text-[12px] font-mono">{{ ticker.vol?.toLocaleString() }}</span>
             </div>
             <div class="flex flex-col flex-none gap-1 leading-none text-right">
                 <span class="text-[#848E9C] text-[11px]">24h Vol(USD)</span>
-                <span class="text-white text-[12px] font-mono">9,389,300</span>
+                <span class="text-white text-[12px] font-mono">{{ ticker.volQuote?.toLocaleString() }}</span>
             </div>
             <div class="flex flex-col flex-none gap-1 leading-none text-right">
                 <span class="text-[#848E9C] text-[11px]">Open Interest(Cont)</span>

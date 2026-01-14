@@ -7,9 +7,11 @@ import FuturesOrderBook from '@/components/trading/FuturesOrderBook.vue'
 import FuturesTrades from '@/components/trading/FuturesTrades.vue'
 import FuturesTradeForm from '@/components/trading/FuturesTradeForm.vue'
 import FuturesChart from '@/components/trading/FuturesChart.vue'
+import { useBinanceData } from '@/composables/useBinanceData'
 
 const activeSideTab = ref('trades')
 const activeTab = ref('Chart')
+const { ticker, orderBook } = useBinanceData('BTCUSDT')
 
 const tickerItems = ref([
     { ticker: 'TUSDТ', change: -6.45, price: 0.4639, isNegative: true },
@@ -60,7 +62,7 @@ onUnmounted(() => {
         <main class="flex-1 flex flex-col overflow-y-auto lg:overflow-hidden">
             <!-- Section 3: Trading Pair Header & Stats -->
             <div class="overflow-x-auto no-scrollbar">
-                <FuturesHeader />
+                <FuturesHeader :ticker="ticker" />
             </div>
 
             <!-- Trading Layout: Charts and Sidebars -->
@@ -246,7 +248,7 @@ onUnmounted(() => {
                     <!-- Section 5: Order Book -->
                     <div
                         class="h-[380px] lg:h-[380px] bg-[#181A20] border-b border-[#2B3139] flex flex-col flex-none overflow-hidden">
-                        <FuturesOrderBook />
+                        <FuturesOrderBook :asks="orderBook.asks" :bids="orderBook.bids" :ticker="ticker" />
                     </div>
                     <!-- Section 6: Trades -->
                     <div

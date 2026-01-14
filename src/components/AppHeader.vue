@@ -1,21 +1,27 @@
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuth } from '../composables/useAuth'
 
+const router = useRouter()
+const { isLoggedIn, user, logout } = useAuth()
 const activeDropdown = ref(null)
 const isMobileMenuOpen = ref(false)
+
+const handleLogout = () => {
+  logout()
+  router.push('/')
+}
 
 const tradeDropdown = {
   basic: [
     { name: 'Spot', desc: 'Buy and sell on the Spot market with advanced tools', icon: '📊', path: '/trade/BTC_USDT' },
     { name: 'Margin', desc: 'Increase your profits with leverage', icon: '📈', path: '/margin' },
-    { name: 'P2P', desc: 'Buy & sell cryptocurrencies using bank transfer and 800+ options', icon: '👥' },
-    { name: 'Convert & Block Trade', desc: 'The easiest way to trade at all sizes', icon: '🔄' }
+
   ],
   advanced: [
     { name: 'Trading Bots', desc: 'Trade smarter with our various automated strategies - easy and reliable', icon: '🤖' },
-    { name: 'Copy Trading', desc: 'Follow the most popular traders', icon: '📋' },
     { name: 'Alpha', desc: 'Quick access to Web3 via Alpha Trading', icon: '🌐', path: '/alpha' },
-    { name: 'APIs', desc: 'Unlimited opportunities with one key', icon: '😊' }
   ]
 }
 
@@ -27,8 +33,14 @@ const futuresDropdown = [
 
 const earnDropdown = [
   { name: 'Overview', desc: 'One-stop portal for all Earn products', icon: '🔒', path: '/earn' },
-  { name: 'Simple Earn', desc: 'Earn passive income on 300+ crypto assets with flexible and locked terms', icon: '💰', path: '/earn/simple' },
-  { name: 'Advanced Earn', desc: 'Maximize your returns with our advanced yield investment products', icon: '📈', path: '/earn/advanced' },
+  {
+    name: 'Simple Earn', desc: 'Earn passive income on 300+ crypto assets with flexible and locked terms', icon: '💰',
+    path: '/earn/simple'
+  },
+  {
+    name: 'Advanced Earn', desc: 'Maximize your returns with our advanced yield investment products', icon: '📈', path:
+      '/earn/advanced'
+  },
   { name: 'Loans', desc: 'Access quick and easy loans with competitive rates', icon: '🏦', path: '/earn/loan' }
 ]
 
@@ -39,7 +51,10 @@ const squareDropdown = [
 ]
 
 const moreDropdown = [
-  { name: 'VIP & Institutional', desc: 'Your trusted digital asset platform for VIPs and institutions', icon: '💎', path: '/vip' },
+  {
+    name: 'VIP & Institutional', desc: 'Your trusted digital asset platform for VIPs and institutions', icon: '💎', path:
+      '/vip'
+  },
   { name: 'Launchpool', desc: 'Discover and gain access to new token launches', icon: '🚀', path: '/launchpool' },
   { name: 'Binance Wallet', desc: 'Access and Navigate Web3 Effortlessly', icon: '👛', path: '/web3wallet' },
   { name: 'Binance Academy', desc: 'Free crypto & blockchain education', icon: '🎓', path: '/academy' }
@@ -242,14 +257,35 @@ const closeMobileMenu = () => {
           </svg>
         </button>
 
-        <router-link to="/login"
-          class="text-[14px] font-medium text-white hover:text-primary transition-colors whitespace-nowrap">Log
-          In</router-link>
+        <template v-if="!isLoggedIn">
+          <router-link to="/login"
+            class="text-[14px] font-medium text-white hover:text-primary transition-colors whitespace-nowrap">Log
+            In</router-link>
 
-        <router-link to="/register"
-          class="bg-primary hover:bg-[#F0B90B] text-black px-4 py-1.5 rounded-[4px] font-medium text-[14px] transition-colors whitespace-nowrap">
-          Sign Up
-        </router-link>
+          <router-link to="/register"
+            class="bg-primary hover:bg-[#F0B90B] text-black px-4 py-1.5 rounded-[4px] font-medium text-[14px] transition-colors whitespace-nowrap">
+            Sign Up
+          </router-link>
+        </template>
+
+        <template v-else>
+          <div class="flex items-center gap-4">
+            <router-link to="/dashboard" class="flex items-center gap-2 group">
+              <div
+                class="w-8 h-8 rounded-full bg-[#2b3139] flex items-center justify-center text-primary font-bold text-sm">
+                {{ user?.email?.[0]?.toUpperCase() || 'U' }}
+              </div>
+              <span
+                class="text-[14px] font-medium text-white group-hover:text-primary transition-colors max-w-[100px] truncate">
+                {{ user?.email }}
+              </span>
+            </router-link>
+            <button @click="handleLogout"
+              class="text-[14px] font-medium text-[#848E9C] hover:text-[#F6465D] transition-colors">
+              Log Out
+            </button>
+          </div>
+        </template>
 
         <div class="w-px h-5 bg-[#2b3139]"></div>
 
