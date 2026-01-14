@@ -1,22 +1,25 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, shallowRef } from 'vue'
+import { createChart, CandlestickSeries, HistogramSeries, LineSeries } from 'lightweight-charts'
 
 /* =====================
    CONFIG
 ===================== */
 const SYMBOL = 'BTCUSDT'
 const INTERVAL_MS = 60_000 // 1m candles
-const MAX_CANDLES = 300
-
-const containerRef = ref(null)
-const chartWidth = ref(1200)
-const chartHeight = ref(500)
-const volumeHeight = 50
-const padding = { top: 10, right: 70, bottom: 10, left: 0 }
+const MAX_CANDLES = 1000
 
 /* =====================
    STATE
 ===================== */
+const containerRef = ref(null)
+const chartRef = shallowRef(null)
+const candleSeries = shallowRef(null)
+const volumeSeries = shallowRef(null)
+const ma7Series = shallowRef(null)
+const ma25Series = shallowRef(null)
+const ma99Series = shallowRef(null)
+
 const candles = ref([])
 let currentCandle = null
 let ws = null
@@ -26,21 +29,70 @@ let resizeObserver = null
    BINANCE REST (HISTORY)
 ===================== */
 async function loadHistoricalCandles() {
-    const res = await fetch(
-        `https://fapi.binance.com/fapi/v1/klines?symbol=${SYMBOL}&interval=1m&limit=${MAX_CANDLES}`
-    )
-    const data = await res.json()
+    try {
+        const res = await fetch(
+            `https://fapi.binance.com/fapi/v1/klines?symbol=${SYMBOL}&interval=1m&limit=${MAX_CANDLES}`
+        )
+        const data = await res.json()
 
-    candles.value = data.map(k => ({
-        time: k[0],
-        open: +k[1],
-        high: +k[2],
-        low: +k[3],
-        close: +k[4],
-        volume: +k[5],
-    }))
+        const formattedData = data.map(k => ({
+            time: k[0] / 1000, // TV uses seconds
+            open: +k[1],
+            high: +k[2],
+            low: +k[3],
+            close: +k[4],
+            volume: +k[5],
+        }))
 
-    currentCandle = candles.value[candles.value.length - 1]
+        candles.value = formattedData
+
+        if (candleSeries.value) {
+            candleSeries.value.setData(formattedData)
+        }
+
+        if (volumeSeries.value) {
+            volumeSeries.value.setData(formattedData.map(d => ({
+                time: d.time,
+                value: d.volume,
+                color: d.close >= d.open ? 'rgba(14, 203, 129, 0.5)' : 'rgba(246, 70, 93, 0.5)'
+            })))
+        }
+
+        updateMA()
+
+        currentCandle = formattedData[formattedData.length - 1]
+    } catch (e) {
+        console.error("Failed to load history", e)
+    }
+}
+
+/* =====================
+   MOVING AVERAGES
+===================== */
+function updateMA() {
+    const ma7Data = calculateMA(7, candles.value)
+    const ma25Data = calculateMA(25, candles.value)
+    const ma99Data = calculateMA(99, candles.value)
+
+    if (ma7Series.value) ma7Series.value.setData(ma7Data)
+    if (ma25Series.value) ma25Series.value.setData(ma25Data)
+    if (ma99Series.value) ma99Series.value.setData(ma99Data)
+}
+
+function calculateMA(period, data) {
+    const result = []
+    for (let i = 0; i < data.length; i++) {
+        if (i < period - 1) continue
+        let sum = 0
+        for (let j = 0; j < period; j++) {
+            sum += data[i - j].close
+        }
+        result.push({
+            time: data[i].time,
+            value: sum / period
+        })
+    }
+    return result
 }
 
 /* =====================
@@ -49,30 +101,56 @@ async function loadHistoricalCandles() {
 function handleTrade(trade) {
     const price = parseFloat(trade.p)
     const qty = parseFloat(trade.q)
-    const candleTime = Math.floor(trade.T / INTERVAL_MS) * INTERVAL_MS
+    const timeFull = trade.T
+    const timeSeconds = Math.floor(timeFull / 1000 / 60) * 60 // 1m alignment
 
-    if (!currentCandle || currentCandle.time !== candleTime) {
-        if (currentCandle) {
-            candles.value.push(currentCandle)
-            if (candles.value.length > MAX_CANDLES) candles.value.shift()
-        }
-
+    if (!currentCandle || currentCandle.time !== timeSeconds) {
+        // New candle
         currentCandle = {
-            time: candleTime,
+            time: timeSeconds,
             open: price,
             high: price,
             low: price,
             close: price,
             volume: qty,
         }
+        candles.value.push(currentCandle)
+
+        if (candleSeries.value) {
+            candleSeries.value.update(currentCandle)
+        }
+        // Volume update not efficient for new candle append in TV, better to setData if necessary or just update last
+        // For TV, update() works for existing or new next candle.
+        if (volumeSeries.value) {
+            volumeSeries.value.update({
+                time: timeSeconds,
+                value: qty,
+                color: 'rgba(14, 203, 129, 0.5)' // default
+            })
+        }
     } else {
+        // Update existing
         currentCandle.high = Math.max(currentCandle.high, price)
         currentCandle.low = Math.min(currentCandle.low, price)
         currentCandle.close = price
         currentCandle.volume += qty
+
+        if (candleSeries.value) {
+            candleSeries.value.update(currentCandle)
+        }
+
+        if (volumeSeries.value) {
+            volumeSeries.value.update({
+                time: currentCandle.time,
+                value: currentCandle.volume,
+                color: currentCandle.close >= currentCandle.open ? 'rgba(14, 203, 129, 0.5)' : 'rgba(246, 70, 93, 0.5)'
+            })
+        }
     }
 
-    candles.value[candles.value.length - 1] = { ...currentCandle }
+    // Recalculate MA for the last point would be expensive on every tick, 
+    // maybe do it throttled or just let it lag slightly until next fetch?
+    // For simplicity, we skip live MA updates or just do simple one-point calculation.
 }
 
 /* =====================
@@ -80,185 +158,128 @@ function handleTrade(trade) {
 ===================== */
 function connectWS() {
     ws = new WebSocket(`wss://fstream.binance.com/ws/${SYMBOL.toLowerCase()}@aggTrade`)
-
     ws.onmessage = e => handleTrade(JSON.parse(e.data))
     ws.onclose = () => setTimeout(connectWS, 2000)
 }
 
 /* =====================
-   MOVING AVERAGES
-===================== */
-const calculateMA = period =>
-    candles.value.map((_, i) => {
-        if (i < period - 1) return null
-        const slice = candles.value.slice(i - period + 1, i + 1)
-        return slice.reduce((a, c) => a + c.close, 0) / period
-    })
-
-const ma7 = computed(() => calculateMA(7))
-const ma25 = computed(() => calculateMA(25))
-const ma99 = computed(() => calculateMA(99))
-
-/* =====================
-   SCALES
-===================== */
-const priceRange = computed(() => {
-    const prices = candles.value.flatMap(c => [c.high, c.low])
-    return {
-        min: Math.min(...prices),
-        max: Math.max(...prices),
-    }
-})
-
-const scaleY = price => {
-    const range = priceRange.value.max - priceRange.value.min
-    const availableHeight = chartHeight.value - padding.top - padding.bottom
-    if (range === 0) return availableHeight / 2
-
-    return availableHeight - ((price - priceRange.value.min) / range) * availableHeight
-}
-
-const yAxisTicks = computed(() => {
-    const { min, max } = priceRange.value
-    if (min === max) return []
-    const range = max - min
-    const tickCount = 6
-    const step = range / tickCount
-    return Array.from({ length: tickCount + 1 }, (_, i) => {
-        const val = min + i * step
-        return {
-            price: val,
-            y: scaleY(val)
-        }
-    })
-})
-
-const candleSpacing = computed(
-    () => (chartWidth.value - padding.left - padding.right) / Math.max(candles.value.length, 1)
-)
-
-const candleWidth = computed(() => candleSpacing.value * 0.7)
-
-/* =====================
-   MA PATH
-===================== */
-const generateMAPath = ma =>
-    ma
-        .map((v, i) =>
-            v === null
-                ? null
-                : `${padding.left + i * candleSpacing.value + candleSpacing.value / 2},${padding.top + scaleY(v)}`
-        )
-        .filter(Boolean)
-        .join(' L ')
-
-/* =====================
-   OHLC BAR
-===================== */
-const current = computed(() => candles.value[candles.value.length - 1] || {})
-const ohlc = computed(() => ({
-    open: current.value.open,
-    high: current.value.high,
-    low: current.value.low,
-    close: current.value.close,
-    change:
-        current.value.open
-            ? (((current.value.close - current.value.open) / current.value.open) * 100).toFixed(2)
-            : '0.00',
-}))
-
-/* =====================
    LIFECYCLE
 ===================== */
 onMounted(async () => {
+    // INIT CHART
+    chartRef.value = createChart(containerRef.value, {
+        layout: {
+            background: { type: 'solid', color: '#181A20' },
+            textColor: '#848E9C',
+        },
+        grid: {
+            vertLines: { color: '#2B3139', style: 2 }, // Dotted
+            horzLines: { color: '#2B3139', style: 2 },
+        },
+        crosshair: {
+            mode: 1, // CrosshairMode.Normal (0), Magnet (1)
+            vertLine: {
+                width: 1,
+                color: '#848E9C',
+                style: 3, // Dashed
+                labelBackgroundColor: '#474D57',
+            },
+            horzLine: {
+                width: 1,
+                color: '#848E9C',
+                style: 3,
+                labelBackgroundColor: '#474D57',
+            },
+        },
+        rightPriceScale: {
+            borderColor: '#2B3139',
+        },
+        timeScale: {
+            borderColor: '#2B3139',
+            timeVisible: true,
+            secondsVisible: false,
+        },
+    })
+
+    // VOLUME (Histogram)
+    volumeSeries.value = chartRef.value.addSeries(HistogramSeries, {
+        color: '#26a69a',
+        priceFormat: {
+            type: 'volume',
+        },
+        priceScaleId: '', // Set as overlay
+    })
+
+    // Adjust volume to sit at bottom
+    volumeSeries.value.priceScale().applyOptions({
+        scaleMargins: {
+            top: 0.8, // Highest volume bar takes up bottom 20%
+            bottom: 0,
+        },
+    });
+
+    // CANDLES
+    candleSeries.value = chartRef.value.addSeries(CandlestickSeries, {
+        upColor: '#0ECB81',
+        downColor: '#F6465D',
+        borderDownColor: '#F6465D',
+        borderUpColor: '#0ECB81',
+        wickDownColor: '#F6465D',
+        wickUpColor: '#0ECB81',
+    })
+
+    // MOVING AVERAGES
+    ma7Series.value = chartRef.value.addSeries(LineSeries, {
+        color: '#FCD535',
+        lineWidth: 1,
+        priceScaleId: 'right', // Share scale with candles
+    })
+    ma25Series.value = chartRef.value.addSeries(LineSeries, {
+        color: '#E611FF',
+        lineWidth: 1,
+        priceScaleId: 'right',
+    })
+    ma99Series.value = chartRef.value.addSeries(LineSeries, {
+        color: '#EAECEF',
+        lineWidth: 1,
+        priceScaleId: 'right',
+    })
+
+    // RESIZE OBSERVER
+    resizeObserver = new ResizeObserver(entries => {
+        if (!entries[0] || !chartRef.value) return
+        const { width, height } = entries[0].contentRect
+        chartRef.value.applyOptions({ width, height })
+    })
+    resizeObserver.observe(containerRef.value)
+
+    // DATA
     await loadHistoricalCandles()
     connectWS()
-
-    if (containerRef.value) {
-        resizeObserver = new ResizeObserver(entries => {
-            const entry = entries[0]
-            if (entry) {
-                const { width, height } = entry.contentRect
-                chartWidth.value = width
-                chartHeight.value = height
-            }
-        })
-        resizeObserver.observe(containerRef.value)
-    }
 })
 
 onUnmounted(() => {
     if (ws) ws.close()
     if (resizeObserver) resizeObserver.disconnect()
+    if (chartRef.value) chartRef.value.remove()
 })
 </script>
 
 <template>
-    <div ref="containerRef" class="w-full h-full bg-[#181A20] flex flex-col">
-        <!-- OHLC BAR -->
-        <div class="flex gap-4 px-4 py-2 text-[11px] border-b border-[#2B3139]">
-            <span>O: <span :class="ohlc.close >= ohlc.open ? 'text-[#0ECB81]' : 'text-[#F6465D]'">{{
-                ohlc.open?.toFixed(1) }}</span></span>
-            <span>H: <span :class="ohlc.close >= ohlc.open ? 'text-[#0ECB81]' : 'text-[#F6465D]'">{{
-                ohlc.high?.toFixed(1) }}</span></span>
-            <span>L: <span :class="ohlc.close >= ohlc.open ? 'text-[#0ECB81]' : 'text-[#F6465D]'">{{
-                ohlc.low?.toFixed(1) }}</span></span>
-            <span>C: <span :class="ohlc.close >= ohlc.open ? 'text-[#0ECB81]' : 'text-[#F6465D]'">{{
-                ohlc.close?.toFixed(1) }}</span></span>
-            <span>CHANGE: <span :class="ohlc.change >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]'">{{ ohlc.change
-            }}%</span></span>
-            <span class="text-[#FCD535]">MA7 {{ ma7.at(-1)?.toFixed(1) }}</span>
-            <span class="text-[#E611FF]">MA25 {{ ma25.at(-1)?.toFixed(1) }}</span>
-            <span class="text-[#EAECEF]">MA99 {{ ma99.at(-1)?.toFixed(1) }}</span>
+    <div class="w-full h-full bg-[#181A20] flex flex-col relative text-[11px]">
+        <!-- OHLC HEADER OVERLAY -->
+        <div
+            class="absolute top-0 left-0 w-full z-10 flex gap-4 px-4 py-2 border-b border-[#2B3139]/0 pointer-events-none">
+            <!-- Interactive tooltip could go here, or just static MA labels -->
+            <span class="text-[#FCD535]">MA7</span>
+            <span class="text-[#E611FF]">MA25</span>
+            <span class="text-[#EAECEF]">MA99</span>
         </div>
 
-        <!-- CHART -->
-        <svg :viewBox="`0 0 ${chartWidth} ${chartHeight}`" class="w-full h-full">
-            <!-- GRID & AXIS -->
-            <g class="grid">
-                <line v-for="tick in yAxisTicks" :key="'grid-' + tick.price" :x1="0" :y1="padding.top + tick.y"
-                    :x2="chartWidth" :y2="padding.top + tick.y" stroke="#2B3139" stroke-width="1" opacity="0.3" />
-                <text v-for="tick in yAxisTicks" :key="'label-' + tick.price" :x="chartWidth - padding.right + 8"
-                    :y="padding.top + tick.y + 4" fill="#848E9C" font-size="10" text-anchor="start">
-                    {{ tick.price.toFixed(1) }}
-                </text>
-
-                <!-- Current Price Line -->
-                <line v-if="ohlc.close" :x1="0" :y1="padding.top + scaleY(ohlc.close)" :x2="chartWidth"
-                    :y2="padding.top + scaleY(ohlc.close)" :stroke="ohlc.close >= ohlc.open ? '#0ECB81' : '#F6465D'"
-                    stroke-width="1" stroke-dasharray="4" opacity="0.8" />
-                <!-- Current Price Label Background -->
-                <rect v-if="ohlc.close" :x="chartWidth - padding.right + 2" :y="padding.top + scaleY(ohlc.close) - 10"
-                    :width="padding.right - 4" height="20" :fill="ohlc.close >= ohlc.open ? '#0ECB81' : '#F6465D'"
-                    rx="2" />
-                <!-- Current Price Label Text -->
-                <text v-if="ohlc.close" :x="chartWidth - padding.right + 34" :y="padding.top + scaleY(ohlc.close) + 4"
-                    fill="white" font-size="11" font-weight="bold" text-anchor="middle">
-                    {{ ohlc.close.toFixed(1) }}
-                </text>
-            </g>
-
-            <!-- MA -->
-            <path :d="`M ${generateMAPath(ma7)}`" stroke="#FCD535" fill="none" />
-            <path :d="`M ${generateMAPath(ma25)}`" stroke="#E611FF" fill="none" />
-            <path :d="`M ${generateMAPath(ma99)}`" stroke="#EAECEF" fill="none" opacity="0.6" />
-
-            <!-- CANDLES -->
-            <g v-for="(c, i) in candles" :key="c.time">
-                <line :x1="padding.left + i * candleSpacing + candleSpacing / 2"
-                    :x2="padding.left + i * candleSpacing + candleSpacing / 2" :y1="padding.top + scaleY(c.high)"
-                    :y2="padding.top + scaleY(c.low)" :stroke="c.close >= c.open ? '#0ECB81' : '#F6465D'" />
-                <rect :x="padding.left + i * candleSpacing + (candleSpacing - candleWidth) / 2"
-                    :y="padding.top + Math.min(scaleY(c.open), scaleY(c.close))" :width="candleWidth"
-                    :height="Math.max(2, Math.abs(scaleY(c.open) - scaleY(c.close)))"
-                    :fill="c.close >= c.open ? '#0ECB81' : '#F6465D'" />
-            </g>
-        </svg>
+        <div ref="containerRef" class="w-full h-full"></div>
     </div>
 </template>
 
 <style scoped>
-svg {
-    display: block;
-}
+/* Ensure tooltip/overlay text is visible on top of canvas */
 </style>
