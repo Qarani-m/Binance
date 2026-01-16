@@ -83,7 +83,7 @@ onMounted(() => {
             </div>
 
             <!-- Action Required / Verify Banner -->
-            <div
+            <router-link v-if="user?.kycStatus !== 'VERIFIED'" to="/verify-account"
                 class="bg-[#1E2329] border border-[#2B3139] rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-6 hover:border-primary/50 transition-colors cursor-pointer group animate-in delay-200">
                 <div class="flex items-center gap-5 w-full md:w-auto">
                     <div
@@ -99,10 +99,11 @@ onMounted(() => {
                             increase your limits.</p>
                     </div>
                 </div>
-                <button
-                    class="w-full md:w-auto bg-[#FCD535] text-black px-8 py-2.5 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity whitespace-nowrap">Verify
-                    Now</button>
-            </div>
+                <div
+                    class="w-full md:w-auto bg-[#FCD535] text-black px-8 py-2.5 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity whitespace-nowrap text-center">
+                    Verify Now
+                </div>
+            </router-link>
 
             <!-- Market Overview -->
             <div class="animate-in delay-300">

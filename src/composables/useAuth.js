@@ -91,15 +91,7 @@ export function useAuth() {
         password,
       });
 
-      const { token: jwt, userId } = response.data;
-      token.value = jwt;
-
-      await fetchProfile();
-
-      if (user.value) {
-        initSocket(user.value.id);
-      }
-
+      // Response will be { message: "OTP_SENT", email }
       return response.data;
     } catch (error) {
       console.error("Registration failed:", error);

@@ -1,26 +1,57 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '../composables/useAuth'
 
 const router = useRouter()
-const { register } = useAuth()
+const { register, verifyOtp } = useAuth()
+const step = ref(1) // 1: Register, 2: OTP
 const emailPhone = ref('')
 const password = ref('')
+const verificationCode = ref('')
 const acceptTerms = ref(true)
+const isProcessing = ref(false)
+
+const maskedEmail = computed(() => {
+    if (!emailPhone.value) return ''
+    if (!emailPhone.value.includes('@')) {
+        if (emailPhone.value.length > 7) {
+            return emailPhone.value.slice(0, 3) + '****' + emailPhone.value.slice(-3)
+        }
+        return emailPhone.value
+    }
+    const [name, domain] = emailPhone.value.split('@')
+    if (name.length <= 1) return emailPhone.value
+    return `${name[0]}****@${domain}`
+})
 
 const nextStep = async () => {
-    if (!password.value) {
-        // Switch to a password entry state or just prompt
-        // For now, I'll assume we need to add a password field to the UI
-        return
-    }
-    try {
-        console.log(emailPhone.value, password.value)
-        await register(emailPhone.value, password.value)
-        router.push('/dashboard')
-    } catch (error) {
-        alert(error.response?.data?.message || 'Registration failed.')
+    if (step.value === 1) {
+        if (!emailPhone.value) return alert('Please enter your email or phone')
+        if (!password.value) return alert('Please enter your password')
+        if (!acceptTerms.value) return alert('Please accept the terms and conditions')
+
+        isProcessing.value = true
+        try {
+            await register(emailPhone.value, password.value)
+            step.value = 2
+        } catch (error) {
+            alert(error.response?.data?.error || 'Registration failed.')
+        } finally {
+            isProcessing.value = false
+        }
+    } else if (step.value === 2) {
+        if (verificationCode.value.length !== 6) return alert('Please enter the 6-digit code')
+
+        isProcessing.value = true
+        try {
+            await verifyOtp(emailPhone.value, verificationCode.value)
+            router.push('/dashboard')
+        } catch (error) {
+            alert(error.response?.data?.error || 'Verification failed.')
+        } finally {
+            isProcessing.value = false
+        }
     }
 }
 </script>
@@ -105,77 +136,130 @@ const nextStep = async () => {
                         <span class="text-[18px] font-bold tracking-tight uppercase">Binance</span>
                     </div>
 
-                    <h2 class="text-[32px] font-bold text-white mb-8">Welcome to Binance</h2>
+                    <!-- STEP 1: REGISTRATION -->
+                    <div v-if="step === 1" class="space-y-6">
+                        <h2 class="text-[32px] font-bold text-white mb-2">Welcome to Binance</h2>
+                        <p class="text-[14px] text-[#848E9C] mb-6">Create your account and start your journey.</p>
 
-                    <div class="space-y-6">
-                        <!-- Input Group -->
-                        <div class="space-y-2">
-                            <label class="text-[14px] font-medium text-[#848E9C]">Email/Phone number</label>
-                            <div class="relative group">
-                                <input v-model="emailPhone" type="text" placeholder="Email/Phone (without country code)"
-                                    class="w-full bg-transparent border border-[#474D57] rounded-xl px-4 py-4 text-white focus:outline-none focus:border-primary transition-colors hover:border-[#5E6673]" />
+                        <div class="space-y-6">
+                            <!-- Input Group -->
+                            <div class="space-y-2">
+                                <label class="text-[14px] font-medium text-[#848E9C]">Email/Phone number</label>
+                                <div class="relative group">
+                                    <input v-model="emailPhone" type="text"
+                                        placeholder="Email/Phone (without country code)"
+                                        class="w-full bg-transparent border border-[#474D57] rounded-xl px-4 py-4 text-white focus:outline-none focus:border-primary transition-colors hover:border-[#5E6673]" />
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="space-y-2">
-                            <label class="text-[14px] font-medium text-[#848E9C]">Password</label>
-                            <div class="relative group">
-                                <input v-model="password" type="password" placeholder="Password"
-                                    class="w-full bg-transparent border border-[#474D57] rounded-xl px-4 py-4 text-white focus:outline-none focus:border-primary transition-colors hover:border-[#5E6673]" />
+                            <div class="space-y-2">
+                                <label class="text-[14px] font-medium text-[#848E9C]">Password</label>
+                                <div class="relative group">
+                                    <input v-model="password" type="password" placeholder="Password"
+                                        class="w-full bg-transparent border border-[#474D57] rounded-xl px-4 py-4 text-white focus:outline-none focus:border-primary transition-colors hover:border-[#5E6673]" />
+                                </div>
                             </div>
-                        </div>
 
-                        <!-- Terms -->
-                        <div class="flex items-start gap-3">
-                            <div class="relative h-5 w-5 mt-0.5">
-                                <input type="checkbox" v-model="acceptTerms"
-                                    class="peer appearance-none h-5 w-5 rounded bg-transparent border border-[#474D57] checked:bg-primary checked:border-primary cursor-pointer transition-all" />
-                                <svg class="absolute top-0 left-0 w-5 h-5 text-black pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity p-0.5"
-                                    fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                            <!-- Terms -->
+                            <div class="flex items-start gap-3">
+                                <div class="relative h-5 w-5 mt-0.5">
+                                    <input type="checkbox" v-model="acceptTerms"
+                                        class="peer appearance-none h-5 w-5 rounded bg-transparent border border-[#474D57] checked:bg-primary checked:border-primary cursor-pointer transition-all" />
+                                    <svg class="absolute top-0 left-0 w-5 h-5 text-black pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity p-0.5"
+                                        fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                </div>
+                                <p class="text-[12px] text-[#848E9C] leading-relaxed">
+                                    By creating an account, I agree to Binance's
+                                    <a href="#" class="text-white hover:text-primary transition-colors">Terms of
+                                        Service</a>
+                                    and
+                                    <a href="#" class="text-white hover:text-primary transition-colors">Privacy
+                                        Notice</a>.
+                                </p>
+                            </div>
+
+                            <!-- Next Button -->
+                            <button @click="nextStep" :disabled="isProcessing"
+                                class="w-full bg-primary hover:bg-[#F0B90B] text-black font-bold py-4 rounded-xl text-[16px] transition-all transform active:scale-[0.98] flex items-center justify-center gap-2">
+                                <svg v-if="isProcessing" class="animate-spin h-5 w-5 text-black" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                        stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                    </path>
                                 </svg>
+                                {{ isProcessing ? 'Processing...' : 'Next' }}
+                            </button>
+
+                            <!-- Divider -->
+                            <div class="relative py-2">
+                                <div class="absolute inset-0 flex items-center">
+                                    <div class="w-full border-t border-[#2B3139]"></div>
+                                </div>
+                                <div class="relative flex justify-center">
+                                    <span class="bg-[#1E2329] px-4 text-[12px] text-[#848E9C]">or</span>
+                                </div>
                             </div>
-                            <p class="text-[12px] text-[#848E9C] leading-relaxed">
-                                By creating an account, I agree to Binance's
-                                <a href="#" class="text-white hover:text-primary transition-colors">Terms of Service</a>
-                                and
-                                <a href="#" class="text-white hover:text-primary transition-colors">Privacy Notice</a>.
+
+                            <!-- Social Buttons -->
+                            <div class="space-y-3">
+                                <button
+                                    class="w-full bg-transparent border border-[#2B3139] hover:bg-[#2B3139] text-white flex items-center justify-center gap-3 py-3.5 rounded-xl transition-all group">
+                                    <svg class="w-5 h-5" viewBox="0 0 24 24">
+                                        <path fill="#4285F4"
+                                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                                        <path fill="#34A853"
+                                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                                        <path fill="#FBBC05"
+                                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
+                                        <path fill="#EA4335"
+                                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                                    </svg>
+                                    <span class="text-[14px] font-medium">Continue with Google</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2: OTP VERIFICATION -->
+                    <div v-if="step === 2" class="space-y-8 animate-in transition-all">
+                        <div>
+                            <button @click="step = 1"
+                                class="text-text-secondary hover:text-white mb-4 transition-colors">
+                                <svg class="w-6 h-6 border rounded-full p-1 border-[#2B3139]" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path d="M15 19l-7-7 7-7" stroke-width="2" />
+                                </svg>
+                            </button>
+                            <h2 class="text-[32px] font-bold text-white leading-tight mb-4">Email Verification</h2>
+                            <p class="text-[14px] text-[#848E9C] leading-relaxed">
+                                Enter the 6-digit verification code sent to <span class="text-white font-medium">{{
+                                    maskedEmail }}</span>.
                             </p>
                         </div>
 
-                        <!-- Next Button -->
-                        <button @click="nextStep"
-                            class="w-full bg-primary hover:bg-[#F0B90B] text-black font-bold py-4 rounded-xl text-[16px] transition-all transform active:scale-[0.98]">
-                            Next
-                        </button>
-
-                        <!-- Divider -->
-                        <div class="relative py-2">
-                            <div class="absolute inset-0 flex items-center">
-                                <div class="w-full border-t border-[#2B3139]"></div>
+                        <div class="space-y-6">
+                            <div class="space-y-2">
+                                <label class="text-[14px] font-medium text-[#848E9C]">Email Verification Code</label>
+                                <div class="relative">
+                                    <input v-model="verificationCode" type="text" maxlength="6" @keyup.enter="nextStep"
+                                        class="w-full bg-transparent border border-[#474D57] rounded-xl px-4 py-4 text-white focus:outline-none focus:border-primary transition-colors hover:border-[#5E6673] tracking-[0.5em] text-center text-lg" />
+                                </div>
                             </div>
-                            <div class="relative flex justify-center">
-                                <span class="bg-[#1E2329] px-4 text-[12px] text-[#848E9C]">or</span>
-                            </div>
-                        </div>
 
-                        <!-- Social Buttons -->
-                        <div class="space-y-3">
-                            <button
-                                class="w-full bg-transparent border border-[#2B3139] hover:bg-[#2B3139] text-white flex items-center justify-center gap-3 py-3.5 rounded-xl transition-all group">
-                                <svg class="w-5 h-5" viewBox="0 0 24 24">
-                                    <path fill="#4285F4"
-                                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                                    <path fill="#34A853"
-                                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                                    <path fill="#FBBC05"
-                                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
-                                    <path fill="#EA4335"
-                                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                            <button @click="nextStep" :disabled="isProcessing || verificationCode.length !== 6"
+                                class="w-full bg-primary hover:bg-[#F0B90B] text-black font-bold py-4 rounded-xl text-[16px] transition-all transform active:scale-[0.98] flex items-center justify-center gap-2">
+                                <svg v-if="isProcessing" class="animate-spin h-5 w-5 text-black" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                        stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                    </path>
                                 </svg>
-                                <span class="text-[14px] font-medium">Continue with Google</span>
+                                {{ isProcessing ? 'Verifying OTP...' : 'Submit' }}
                             </button>
-                        
                         </div>
                     </div>
                 </div>

@@ -139,6 +139,11 @@ const router = createRouter({
       name: "price-page",
       component: () => import("@/views/PricePage.vue"),
     },
+    {
+      path: "/verify-account",
+      name: "verify-account",
+      component: () => import("@/views/IdentityVerificationPage.vue"),
+    },
   ],
 });
 
