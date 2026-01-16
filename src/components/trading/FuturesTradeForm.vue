@@ -1,15 +1,77 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useAuth } from '@/composables/useAuth'
+import { useFutures } from '@/composables/useFutures'
+import { useNotification } from '@/composables/useNotification'
 
-const { isLoggedIn } = useAuth()
+const { isLoggedIn, user } = useAuth()
+const { addOrder, loading } = useFutures()
+const { showNotification } = useNotification()
 const activeTab = ref('limit')
 const btcAmount = ref('')
-const price = ref('95,573.3')
+const price = ref('95573.3') // Removed comma for easier calculation
 const marginMode = ref('Cross')
 const leverage = ref('20x')
 const showTPSL = ref(false)
 const showReduceOnly = ref(false)
+
+const usdtBalance = computed(() => {
+    if (!user.value?.balances) return 0
+    const usdt = user.value.balances.find(b => b.coin === 'USDT')
+    return usdt ? usdt.available : 0
+})
+
+const sliderValue = ref(0)
+
+const setPercentage = (percent) => {
+    sliderValue.value = percent
+    if (usdtBalance.value > 0) {
+        const lev = parseInt(leverage.value) || 1
+        const maxBuyingPower = usdtBalance.value * lev
+        const amount = (maxBuyingPower * (percent / 100)) / parseFloat(price.value.replace(/,/g, ''))
+        btcAmount.value = amount.toFixed(4)
+    }
+}
+
+const handleBuyLong = async () => {
+    if (!btcAmount.value || loading.value) return
+    try {
+        await addOrder({
+            symbol: 'BTCUSDT',
+            side: 'BUY',
+            type: activeTab.value,
+            price: price.value,
+            amount: btcAmount.value,
+            leverage: parseInt(leverage.value),
+            marginMode: marginMode.value
+        })
+        btcAmount.value = ''
+        sliderValue.value = 0
+        showNotification('Trade opened successfully!', 'success')
+    } catch (err) {
+        showNotification(err.response?.data?.error || err.response?.data?.message || err.message, 'error')
+    }
+}
+
+const handleSellShort = async () => {
+    if (!btcAmount.value || loading.value) return
+    try {
+        await addOrder({
+            symbol: 'BTCUSDT',
+            side: 'SELL',
+            type: activeTab.value,
+            price: price.value,
+            amount: btcAmount.value,
+            leverage: parseInt(leverage.value),
+            marginMode: marginMode.value
+        })
+        btcAmount.value = ''
+        sliderValue.value = 0
+        showNotification('Trade opened successfully!', 'success')
+    } catch (err) {
+        showNotification(err.response?.data?.error || err.response?.data?.message || err.message, 'error')
+    }
+}
 </script>
 
 <template>
@@ -31,10 +93,10 @@ const showReduceOnly = ref(false)
         <div class="px-3 mt-4 flex gap-1.5 h-7">
             <button
                 class="flex-1 bg-[#2B3139] hover:bg-[#323a45] text-white rounded transition-colors font-medium text-[11px]">{{
-                marginMode }}</button>
+                    marginMode }}</button>
             <button
                 class="flex-1 bg-[#2B3139] hover:bg-[#323a45] text-white rounded transition-colors font-medium text-[11px]">{{
-                leverage }}</button>
+                    leverage }}</button>
             <button
                 class="w-[28px] bg-[#2B3139] hover:bg-[#323a45] text-white rounded transition-colors flex items-center justify-center">S</button>
         </div>
@@ -65,7 +127,7 @@ const showReduceOnly = ref(false)
             <div class="flex justify-between items-center text-[10px]">
                 <span class="text-[#848E9C]">Avbl</span>
                 <div class="flex items-center gap-1">
-                    <span class="text-[#EAECEF] font-medium">- USDT</span>
+                    <span class="text-[#EAECEF] font-medium">{{ usdtBalance.toLocaleString() }} USDT</span>
                     <svg class="w-3 h-3 text-primary cursor-pointer" fill="none" stroke="currentColor"
                         viewBox="0 0 24 24">
                         <path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" stroke-width="2" />
@@ -79,7 +141,7 @@ const showReduceOnly = ref(false)
                 </div>
                 <div class="relative group">
                     <input v-model="price" type="text"
-                        class="w-full bg-[#2B3139] border border-transparent focus:border-[#FCD535] rounded px-3 py-2 text-right font-mono text-white text-[13px] outline-none transition-all">
+                        class="w-full bg-[#2B3139] border border-transparent focus:border-[#FCD535] rounded pl-3 pr-[88px] py-2 text-right font-mono text-white text-[13px] outline-none transition-all">
                     <span
                         class="absolute left-2 top-1/2 -translate-y-1/2 text-[#848E9C] pointer-events-none">Price</span>
                     <span class="absolute right-[45px] top-1/2 -translate-y-1/2 text-[#848E9C] font-medium">USDT</span>
@@ -94,7 +156,7 @@ const showReduceOnly = ref(false)
                 </div>
                 <div class="relative group">
                     <input v-model="btcAmount" type="text" placeholder="Size"
-                        class="w-full bg-[#2B3139] border border-transparent focus:border-[#FCD535] rounded px-3 py-2 text-right font-mono text-white text-[13px] outline-none transition-all">
+                        class="w-full bg-[#2B3139] border border-transparent focus:border-[#FCD535] rounded pl-3 pr-[68px] py-2 text-right font-mono text-white text-[13px] outline-none transition-all">
                     <span
                         class="absolute left-2 top-1/2 -translate-y-1/2 text-[#848E9C] pointer-events-none">Size</span>
                     <div
@@ -109,12 +171,12 @@ const showReduceOnly = ref(false)
             <!-- Percentage Slider -->
             <div class="relative pt-2 pb-6 flex items-center group">
                 <div class="w-full h-[2px] bg-[#2B3139] rounded relative">
-                    <div
-                        class="absolute -top-1.5 left-0 w-3 h-3 bg-[#EAECEF] border border-[#181A20] rotate-45 cursor-pointer z-10">
+                    <div class="absolute -top-1.5 w-3 h-3 bg-[#EAECEF] border border-[#181A20] rotate-45 cursor-pointer z-10 transition-all"
+                        :style="{ left: `calc(${sliderValue}% - 6px)` }">
                     </div>
-                    <div v-for="i in 4" :key="i"
+                    <div v-for="i in [0, 25, 50, 75, 100]" :key="i" @click="setPercentage(i)"
                         class="absolute top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-[#474D57] rounded-full hover:bg-primary transition-colors cursor-pointer"
-                        :style="{ left: (i * 25) + '%' }"></div>
+                        :class="{ 'bg-primary': sliderValue >= i }" :style="{ left: i + '%' }"></div>
                 </div>
             </div>
 
@@ -142,10 +204,14 @@ const showReduceOnly = ref(false)
                     </div>
 
                     <div class="flex gap-2">
-                        <button
-                            class="flex-1 bg-[#02C076] hover:opacity-90 text-white font-bold py-2.5 rounded transition-all transform active:scale-[0.98] text-[13px]">Buy/Long</button>
-                        <button
-                            class="flex-1 bg-[#F6465D] hover:opacity-90 text-white font-bold py-2.5 rounded transition-all transform active:scale-[0.98] text-[13px]">Sell/Short</button>
+                        <button @click="handleBuyLong" :disabled="loading"
+                            class="flex-1 bg-[#02C076] hover:opacity-90 disabled:opacity-50 text-white font-bold py-2.5 rounded transition-all transform active:scale-[0.98] text-[13px]">
+                            {{ loading ? 'Processing...' : 'Buy/Long' }}
+                        </button>
+                        <button @click="handleSellShort" :disabled="loading"
+                            class="flex-1 bg-[#F6465D] hover:opacity-90 disabled:opacity-50 text-white font-bold py-2.5 rounded transition-all transform active:scale-[0.98] text-[13px]">
+                            {{ loading ? 'Processing...' : 'Sell/Short' }}
+                        </button>
                     </div>
 
                     <div

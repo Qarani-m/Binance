@@ -8,10 +8,17 @@ import FuturesTrades from '@/components/trading/FuturesTrades.vue'
 import FuturesTradeForm from '@/components/trading/FuturesTradeForm.vue'
 import FuturesChart from '@/components/trading/FuturesChart.vue'
 import { useBinanceData } from '@/composables/useBinanceData'
+import { useFutures } from '@/composables/useFutures'
 
+const { positions, closePosition, fetchPositions } = useFutures()
 const activeSideTab = ref('trades')
 const activeTab = ref('Chart')
 const { ticker, orderBook } = useBinanceData('BTCUSDT')
+
+onMounted(() => {
+    fetchPositions()
+    // ... existing intervals if any
+})
 
 const tickerItems = ref([
     { ticker: 'TUSDТ', change: -6.45, price: 0.4639, isNegative: true },
@@ -229,7 +236,8 @@ onUnmounted(() => {
                         <div
                             class="flex items-center gap-6 px-4 border-b border-[#2B3139] h-[40px] text-[12px] text-[#848E9C] flex-none overflow-x-auto no-scrollbar">
                             <span
-                                class="text-[#F0B90B] border-b-2 border-[#F0B90B] h-full flex items-center font-medium whitespace-nowrap">Positions(0)</span>
+                                class="text-[#F0B90B] border-b-2 border-[#F0B90B] h-full flex items-center font-medium whitespace-nowrap">Positions({{
+                                    positions.length }})</span>
                             <span
                                 class="hover:text-white cursor-pointer h-full flex items-center font-medium whitespace-nowrap">Open
                                 Orders(0)</span>
@@ -237,8 +245,57 @@ onUnmounted(() => {
                                 class="hover:text-white cursor-pointer h-full flex items-center font-medium whitespace-nowrap">Order
                                 History</span>
                         </div>
-                        <div class="flex-1 flex flex-col items-center justify-center text-[#848E9C]">
-                            <p class="text-sm">No data to display</p>
+                        <div class="flex-1 overflow-y-auto no-scrollbar">
+                            <table v-if="positions.length > 0" class="w-full text-left text-[11px]">
+                                <thead class="text-[#848E9C] border-b border-[#2B3139] sticky top-0 bg-[#181A20] z-10">
+                                    <tr>
+                                        <th class="py-2 px-4 font-normal">Symbol</th>
+                                        <th class="py-2 px-4 font-normal">Size</th>
+                                        <th class="py-2 px-4 font-normal">Entry Price</th>
+                                        <th class="py-2 px-4 font-normal">Mark Price</th>
+                                        <th class="py-2 px-4 font-normal">Liq. Price</th>
+                                        <th class="py-2 px-4 font-normal">Margin</th>
+                                        <th class="py-2 px-4 font-normal">PNL (ROE%)</th>
+                                        <th class="py-2 px-4 font-normal text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="pos in positions" :key="pos.id"
+                                        class="border-b border-[#2B3139]/50 hover:bg-[#2B3139]/30 transition-colors">
+                                        <td class="py-3 px-4">
+                                            <div class="flex items-center gap-1">
+                                                <span class="text-white font-bold">{{ pos.symbol }}</span>
+                                                <span
+                                                    :class="pos.side === 'BUY' ? 'text-[#0ECB81] bg-[#0ECB81]/10' : 'text-[#F6465D] bg-[#F6465D]/10'"
+                                                    class="px-1 rounded-[2px] text-[9px]">{{ pos.type }} {{ pos.leverage
+                                                    }}</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-4 text-[#EAECEF]">{{ pos.size }} BTC</td>
+                                        <td class="px-4 text-[#EAECEF]">{{ pos.entryPrice.toLocaleString() }}</td>
+                                        <td class="px-4 text-[#EAECEF]">{{ pos.markPrice.toLocaleString() }}</td>
+                                        <td class="px-4 text-[#F0B90B]">{{ pos.liquidationPrice.toFixed(1) }}</td>
+                                        <td class="px-4 text-[#EAECEF]">{{ pos.margin.toFixed(2) }} USDT</td>
+                                        <td class="px-4">
+                                            <div :class="pos.unrealizedPnl >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]'"
+                                                class="font-medium">
+                                                {{ pos.unrealizedPnl >= 0 ? '+' : '' }}{{ pos.unrealizedPnl.toFixed(2)
+                                                }} USDT
+                                                <span class="text-[10px] ml-1">({{ pos.roe >= 0 ? '+' : '' }}{{
+                                                    pos.roe.toFixed(2) }}%)</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-4 text-right">
+                                            <button @click="closePosition(pos.id)"
+                                                class="text-[#848E9C] hover:text-white transition-colors underline">Market
+                                                Close</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div v-else class="h-full flex flex-col items-center justify-center text-[#848E9C]">
+                                <p class="text-sm">No data to display</p>
+                            </div>
                         </div>
                     </div>
                 </div>
