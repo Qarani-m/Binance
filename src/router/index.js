@@ -144,6 +144,26 @@ const router = createRouter({
       name: "verify-account",
       component: () => import("@/views/IdentityVerificationPage.vue"),
     },
+    {
+      path: "/checkout/buy",
+      name: "buy-checkout",
+      component: () => import("@/views/BuyUSDCConfirm.vue"),
+    },
+    {
+      path: "/checkout/sell",
+      name: "sell-checkout",
+      component: () => import("@/views/SellUSDCConfirm.vue"),
+    },
+    {
+      path: "/success",
+      name: "stripe-success",
+      component: () => import("@/views/StripeSuccessPage.vue"),
+    },
+    {
+      path: "/cancel",
+      name: "stripe-cancel",
+      redirect: "/buy-crypto",
+    },
   ],
 });
 

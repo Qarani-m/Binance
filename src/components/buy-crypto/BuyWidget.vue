@@ -1,7 +1,9 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
 
+const router = useRouter()
 const { user, fetchProfile } = useAuth()
 
 const activeTab = ref('buy')
@@ -25,13 +27,17 @@ const setMaxAmount = () => {
 }
 
 const buyUSDC = () => {
-    console.log('Buying USDC:', spendAmount.value)
-    // Add buy logic here
+    router.push({
+        path: '/checkout/buy',
+        query: { amount: spendAmount.value }
+    })
 }
 
 const sellUSDC = () => {
-    console.log('Selling USDC:', sellAmount.value)
-    // Add sell logic here
+    router.push({
+        path: '/checkout/sell',
+        query: { amount: sellAmount.value }
+    })
 }
 
 onMounted(() => {
