@@ -75,10 +75,10 @@ onMounted(() => {
                 <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                     <button @click="showDepositSidebar = true"
                         class="bg-primary hover:bg-[#F0B90B] text-black px-6 py-2.5 rounded-lg font-bold text-sm transition-all transform active:scale-95">Deposit</button>
-                    <button
-                        class="bg-[#2B3139] text-white hover:bg-[#3A4049] px-6 py-2.5 rounded-lg font-bold text-sm transition-all transform active:scale-95">Withdraw</button>
-                    <button
-                        class="bg-[#2B3139] text-white hover:bg-[#3A4049] px-6 py-2.5 rounded-lg font-bold text-sm transition-all transform active:scale-95">Transfer</button>
+                    <router-link to="/wallet/withdraw/crypto"
+                        class="bg-[#2B3139] text-white hover:bg-[#3A4049] px-6 py-2.5 rounded-lg font-bold text-sm transition-all transform active:scale-95 text-center">Withdraw</router-link>
+                    <router-link to="/wallet/transfer"
+                        class="bg-[#2B3139] text-white hover:bg-[#3A4049] px-6 py-2.5 rounded-lg font-bold text-sm transition-all transform active:scale-95 text-center">Transfer</router-link>
                 </div>
             </div>
 

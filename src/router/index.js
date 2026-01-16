@@ -125,6 +125,16 @@ const router = createRouter({
       component: () => import("@/views/DepositCryptoPage.vue"),
     },
     {
+      path: "/wallet/withdraw/crypto",
+      name: "withdraw-crypto",
+      component: () => import("@/views/WithdrawCryptoPage.vue"),
+    },
+    {
+      path: "/wallet/transfer",
+      name: "internal-transfer",
+      component: () => import("@/views/InternalTransferPage.vue"),
+    },
+    {
       path: "/price/:ticker",
       name: "price-page",
       component: () => import("@/views/PricePage.vue"),

@@ -4,13 +4,14 @@ import { useRouter } from 'vue-router'
 import { useAuth } from '../composables/useAuth'
 
 const router = useRouter()
-const { login } = useAuth()
+const { login, verifyOtp } = useAuth()
 const step = ref(1) // 1: Email, 2: Password, 3: Verification, 4: StayLoggedIn
 const emailPhone = ref('')
 const password = ref('')
 const showPassword = ref(false)
 const verificationCode = ref('')
 const dontShowAgain = ref(false)
+const isProcessing = ref(false)
 
 const maskedEmail = computed(() => {
     if (!emailPhone.value) return ''
@@ -25,22 +26,39 @@ const maskedEmail = computed(() => {
     return `${name[0]}****@${domain}`
 })
 
-const nextStep = () => {
-    if (step.value < 4) {
-        step.value++
-    } else {
-        finishLogin()
+const nextStep = async () => {
+    if (step.value === 1) {
+        if (!emailPhone.value) return alert('Please enter your email or phone')
+        step.value = 2
+    } else if (step.value === 2) {
+        if (!password.value) return alert('Please enter your password')
+        isProcessing.value = true
+        try {
+            await login(emailPhone.value, password.value)
+            step.value = 3
+        } catch (error) {
+            alert(error.response?.data?.error || 'Login failed. Please check your credentials.')
+        } finally {
+            isProcessing.value = false
+        }
+    } else if (step.value === 3) {
+        if (verificationCode.value.length !== 6) return alert('Please enter the 6-digit code')
+        isProcessing.value = true
+        try {
+            await verifyOtp(emailPhone.value, verificationCode.value)
+            step.value = 4
+        } catch (error) {
+            alert(error.response?.data?.error || 'Verification failed. Please check the code.')
+        } finally {
+            isProcessing.value = false
+        }
+    } else if (step.value === 4) {
+        router.push('/dashboard')
     }
 }
 
-const finishLogin = async () => {
-    try {
-        await login(emailPhone.value, password.value)
-        router.push('/dashboard')
-    } catch (error) {
-        alert(error.response?.data?.message || 'Login failed. Please check your credentials.')
-        step.value = 1 // Reset to step 1 on error for simplicity
-    }
+const finishLogin = () => {
+    router.push('/dashboard')
 }
 </script>
 
@@ -99,14 +117,7 @@ const finishLogin = async () => {
                         </div>
 
                         <div class="space-y-3">
-                            <button
-                                class="w-full bg-transparent border border-[#2B3139] hover:bg-[#2B3139] text-white flex items-center justify-center gap-3 py-3.5 rounded-xl transition-all">
-                                <svg class="w-5 h-5 text-[#848E9C]" fill="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                        d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
-                                </svg>
-                                <span class="text-[14px] font-medium">Continue with Passkey</span>
-                            </button>
+
                             <button
                                 class="w-full bg-transparent border border-[#2B3139] hover:bg-[#2B3139] text-white flex items-center justify-center gap-3 py-3.5 rounded-xl transition-all">
                                 <svg class="w-5 h-5" viewBox="0 0 24 24">
@@ -162,9 +173,16 @@ const finishLogin = async () => {
                             </div>
                         </div>
 
-                        <button @click="nextStep"
-                            class="w-full bg-primary hover:bg-[#F0B90B] text-black font-bold py-4 rounded-xl text-[16px] transition-all transform active:scale-[0.98]">
-                            Continue
+                        <button @click="nextStep" :disabled="isProcessing"
+                            class="w-full bg-primary hover:bg-[#F0B90B] text-black font-bold py-4 rounded-xl text-[16px] transition-all transform active:scale-[0.98] flex items-center justify-center gap-2">
+                            <svg v-if="isProcessing" class="animate-spin h-5 w-5 text-black" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                    stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                            </svg>
+                            {{ isProcessing ? 'Verifying...' : 'Continue' }}
                         </button>
 
                         <div class="text-center">
@@ -206,9 +224,16 @@ const finishLogin = async () => {
                             </div>
                         </div>
 
-                        <button @click="nextStep"
-                            class="w-full bg-primary hover:bg-[#F0B90B] text-black font-bold py-4 rounded-xl text-[16px] transition-all transform active:scale-[0.98]">
-                            Submit
+                        <button @click="nextStep" :disabled="isProcessing || verificationCode.length !== 6"
+                            class="w-full bg-primary hover:bg-[#F0B90B] text-black font-bold py-4 rounded-xl text-[16px] transition-all transform active:scale-[0.98] flex items-center justify-center gap-2">
+                            <svg v-if="isProcessing" class="animate-spin h-5 w-5 text-black" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                    stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                            </svg>
+                            {{ isProcessing ? 'Verifying OTP...' : 'Submit' }}
                         </button>
 
                         <div class="text-center">

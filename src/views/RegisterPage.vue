@@ -175,22 +175,7 @@ const nextStep = async () => {
                                 </svg>
                                 <span class="text-[14px] font-medium">Continue with Google</span>
                             </button>
-                            <button
-                                class="w-full bg-transparent border border-[#2B3139] hover:bg-[#2B3139] text-white flex items-center justify-center gap-3 py-3.5 rounded-xl transition-all group">
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                        d="M17.05 20.28c-.98.95-2.05 1.72-3.15 1.72-1.05 0-1.45-.65-2.65-.65-1.25 0-1.65.65-2.7.65-1.15 0-2.35-1.1-3.3-2.45-1.9-2.75-2.9-7-1-10.25 1-1.65 2.7-2.7 4.55-2.7 1.05 0 1.9.65 2.8.65.85 0 1.8-.65 3-.65 1.65 0 3.1.85 3.95 2.15-3.5 1.45-2.95 6-.1 7.25-.75 1.85-2.15 4.3-3.4 5.25zm-2.4-15.9c.85-1.1 1.45-2.5 1.25-3.85-1.2.05-2.6.85-3.45 1.9-.75.95-1.4 2.4-1.15 3.75 1.3.1 2.55-.7 3.35-1.8z" />
-                                </svg>
-                                <span class="text-[14px] font-medium">Continue with Apple</span>
-                            </button>
-                            <button
-                                class="w-full bg-transparent border border-[#2B3139] hover:bg-[#2B3139] text-white flex items-center justify-center gap-3 py-3.5 rounded-xl transition-all group">
-                                <svg class="w-5 h-5 text-[#24A1DE]" fill="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18.2.2 0 00-.21-.01c-.07.02-1.17.74-3.31 2.18-.31.21-.6.32-.85.31-.28-.01-.81-.16-1.21-.29-.49-.16-.88-.25-.85-.53.02-.15.21-.3.58-.45 2.22-.97 3.7-1.6 4.45-1.91 2.12-.89 2.56-1.05 2.85-1.05.06 0 .21.02.3.09a.33.33 0 01.12.23c0 .05.01.12.01.19z" />
-                                </svg>
-                                <span class="text-[14px] font-medium">Continue with Telegram</span>
-                            </button>
+                        
                         </div>
                     </div>
                 </div>

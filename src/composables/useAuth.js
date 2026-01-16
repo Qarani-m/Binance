@@ -26,7 +26,19 @@ export function useAuth() {
 
     socket.value.on("deposit_update", (deposit) => {
       console.log("Deposit update received:", deposit);
-      fetchProfile().catch(() => {});
+      fetchProfile();
+    });
+
+    socket.value.on("transfer_sent", (data) => {
+      console.log("Transfer sent:", data);
+      alert(`Success! You sent ${data.amount} ${data.coin}.`);
+      fetchProfile();
+    });
+
+    socket.value.on("transfer_received", (data) => {
+      console.log("Transfer received:", data);
+      alert(`Success! You just received ${data.netAmount} ${data.coin}.`);
+      fetchProfile();
     });
 
     socket.value.on("disconnect", () => {
@@ -40,11 +52,25 @@ export function useAuth() {
         email: email.toLowerCase(),
         password,
       });
+      // Response will be { message: "OTP_SENT", email }
+      return response.data;
+    } catch (error) {
+      console.error("Login failed:", error);
+      throw error;
+    }
+  };
+
+  const verifyOtp = async (email, otp) => {
+    try {
+      const response = await api.post("/auth/verify-otp", {
+        email: email.toLowerCase(),
+        otp,
+      });
 
       const { token: jwt, userId } = response.data;
       token.value = jwt;
 
-      // Fetch user profile after login
+      // Fetch user profile after verification
       await fetchProfile();
 
       if (user.value) {
@@ -53,7 +79,7 @@ export function useAuth() {
 
       return response.data;
     } catch (error) {
-      console.error("Login failed:", error);
+      console.error("OTP Verification failed:", error);
       throw error;
     }
   };
@@ -115,6 +141,7 @@ export function useAuth() {
     token,
     login,
     register,
+    verifyOtp,
     logout,
     fetchProfile,
   };
