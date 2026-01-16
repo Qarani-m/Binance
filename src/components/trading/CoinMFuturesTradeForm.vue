@@ -1,8 +1,13 @@
 <script setup>
 import { ref } from 'vue'
 import { useAuth } from '@/composables/useAuth'
+import { useNotification } from '@/composables/useNotification'
+import { useFutures } from '@/composables/useFutures'
 
-const { isLoggedIn } = useAuth()
+const { isLoggedIn, fetchProfile } = useAuth()
+const { showNotification } = useNotification()
+const { addOrder } = useFutures()
+
 const activeTab = ref('limit')
 const contSize = ref('')
 const price = ref('91,538.8')
@@ -10,6 +15,53 @@ const marginMode = ref('Cross')
 const leverage = ref('20x')
 const showTPSL = ref(false)
 const showReduceOnly = ref(false)
+const loading = ref(false)
+
+const handleBuyLong = async () => {
+    if (!contSize.value || loading.value) return
+    try {
+        loading.value = true
+        await addOrder({
+            symbol: 'BTCUSD_PERP',
+            side: 'BUY',
+            type: activeTab.value.toUpperCase(),
+            price: price.value.replace(/,/g, ''),
+            amount: contSize.value,
+            leverage: parseInt(leverage.value),
+            marginMode: marginMode.value
+        })
+        contSize.value = ''
+        showNotification('Order placed successfully!', 'success')
+        await fetchProfile()
+    } catch (err) {
+        showNotification(err.response?.data?.error || err.response?.data?.message || err.message, 'error')
+    } finally {
+        loading.value = false
+    }
+}
+
+const handleSellShort = async () => {
+    if (!contSize.value || loading.value) return
+    try {
+        loading.value = true
+        await addOrder({
+            symbol: 'BTCUSD_PERP',
+            side: 'SELL',
+            type: activeTab.value.toUpperCase(),
+            price: price.value.replace(/,/g, ''),
+            amount: contSize.value,
+            leverage: parseInt(leverage.value),
+            marginMode: marginMode.value
+        })
+        contSize.value = ''
+        showNotification('Order placed successfully!', 'success')
+        await fetchProfile()
+    } catch (err) {
+        showNotification(err.response?.data?.error || err.response?.data?.message || err.message, 'error')
+    } finally {
+        loading.value = false
+    }
+}
 </script>
 
 <template>
@@ -18,12 +70,12 @@ const showReduceOnly = ref(false)
         <div class="p-3 border-b border-[#2B3139] flex-none">
             <!-- Leverage/Cross Controls -->
             <div class="flex gap-1 h-7 mb-4">
-                <button
-                    class="flex-1 bg-[#2B3139] hover:bg-[#323a45] text-white rounded transition-colors font-medium">{{
-                    marginMode }}</button>
-                <button
-                    class="flex-1 bg-[#2B3139] hover:bg-[#323a45] text-white rounded transition-colors font-medium">{{
-                    leverage }}</button>
+                <button class="flex-1 bg-[#2B3139] hover:bg-[#323a45] text-white rounded transition-colors font-medium">
+                    {{ marginMode }}
+                </button>
+                <button class="flex-1 bg-[#2B3139] hover:bg-[#323a45] text-white rounded transition-colors font-medium">
+                    {{ leverage }}
+                </button>
                 <button
                     class="w-[28px] bg-[#2B3139] hover:bg-[#323a45] text-white rounded transition-colors flex items-center justify-center">
                     <svg class="w-3.5 h-3.5 text-[#848E9C]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -44,10 +96,12 @@ const showReduceOnly = ref(false)
                     class="h-full font-medium transition-colors">Market</button>
                 <button @click="activeTab = 'stop-limit'"
                     :class="activeTab === 'stop-limit' ? 'text-[#F0B90B] border-b-2 border-[#F0B90B]' : 'text-[#848E9C]'"
-                    class="h-full font-medium transition-colors flex items-center gap-1">Stop Limit <svg class="w-2 h-2"
-                        fill="currentColor" viewBox="0 0 24 24">
+                    class="h-full font-medium transition-colors flex items-center gap-1">
+                    Stop Limit
+                    <svg class="w-2 h-2" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M7 10l5 5 5-5z" />
-                    </svg></button>
+                    </svg>
+                </button>
                 <div class="ml-auto flex items-center gap-1 text-[#848E9C] hover:text-white cursor-pointer">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="2" />
@@ -71,7 +125,7 @@ const showReduceOnly = ref(false)
                     </div>
                     <div class="relative group">
                         <input v-model="price" type="text"
-                            class="w-full bg-[#2B3139] border border-transparent focus:border-[#FCD535] rounded px-3 py-2 text-right font-mono text-white text-[13px] outline-none transition-all">
+                            class="w-full bg-[#2B3139] border border-transparent focus:border-[#FCD535] rounded pl-3 pr-[90px] py-2 text-right font-mono text-white text-[13px] outline-none transition-all">
                         <span
                             class="absolute left-2 top-1/2 -translate-y-1/2 text-[#848E9C] pointer-events-none">Price</span>
                         <span
@@ -87,12 +141,13 @@ const showReduceOnly = ref(false)
                     </div>
                     <div class="relative group">
                         <input v-model="contSize" type="text" placeholder="1 Cont = 100 USD"
-                            class="w-full bg-[#2B3139] border border-transparent focus:border-[#FCD535] rounded px-3 py-2 text-right font-mono text-white text-[13px] outline-none transition-all">
+                            class="w-full bg-[#2B3139] border border-transparent focus:border-[#FCD535] rounded pl-3 pr-[70px] py-2 text-right font-mono text-white text-[13px] outline-none transition-all">
                         <span
                             class="absolute left-2 top-1/2 -translate-y-1/2 text-[#848E9C] pointer-events-none">Size</span>
                         <div
                             class="absolute right-2 top-1/2 -translate-y-1/2 text-white flex items-center gap-1 font-medium bg-[#181A20] px-1.5 py-0.5 rounded cursor-pointer border border-[#2B3139]">
-                            Cont <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            Cont
+                            <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path d="M19 9l-7 7-7-7" stroke-width="2" />
                             </svg>
                         </div>
@@ -138,10 +193,18 @@ const showReduceOnly = ref(false)
 
                         <!-- CTA Buttons -->
                         <div class="flex gap-2">
-                            <button
-                                class="flex-1 bg-[#02C076] hover:opacity-90 text-white font-bold py-2.5 rounded transition-all transform active:scale-[0.98] text-[13px]">Buy/Long</button>
-                            <button
-                                class="flex-1 bg-[#F6465D] hover:opacity-90 text-white font-bold py-2.5 rounded transition-all transform active:scale-[0.98] text-[13px]">Sell/Short</button>
+                            <button @click="handleBuyLong" :disabled="loading"
+                                class="flex-1 bg-[#02C076] hover:opacity-90 disabled:opacity-50 text-white font-bold py-2.5 rounded transition-all transform active:scale-[0.98] text-[13px] flex items-center justify-center gap-2">
+                                <span v-if="loading"
+                                    class="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                                Buy/Long
+                            </button>
+                            <button @click="handleSellShort" :disabled="loading"
+                                class="flex-1 bg-[#F6465D] hover:opacity-90 disabled:opacity-50 text-white font-bold py-2.5 rounded transition-all transform active:scale-[0.98] text-[13px] flex items-center justify-center gap-2">
+                                <span v-if="loading"
+                                    class="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                                Sell/Short
+                            </button>
                         </div>
 
                         <div
@@ -218,11 +281,9 @@ const showReduceOnly = ref(false)
 .no-scrollbar::-webkit-scrollbar {
     display: none;
 }
-</style>
 
-
-<style scoped>
-.no-scrollbar::-webkit-scrollbar {
-    display: none;
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 </style>

@@ -23,9 +23,12 @@ const selectedMethod = ref('stripe_card')
 const handleSell = async () => {
     isProcessing.value = true
     try {
-        await api.post('/stripe/sell', {
+        console.log('Initiating sell request for:', amount.value)
+        const response = await api.post('/stripe/sell', {
             amount: parseFloat(amount.value),
-            method: selectedMethod.value
+            currency: 'USDC',
+            payoutMethod: selectedMethod.value,
+            method: selectedMethod.value // Keeping both for compatibility
         })
 
         isSuccess.value = true
@@ -35,7 +38,9 @@ const handleSell = async () => {
         fetchProfile().catch(console.error)
 
     } catch (err) {
-        showNotification(err.response?.data?.error || err.response?.data?.message || 'Transaction failed', 'error')
+        console.error('Sell request failed:', err)
+        const errorMsg = err.response?.data?.error || err.response?.data?.message || err.message || 'Network Error'
+        showNotification(errorMsg, 'error')
     } finally {
         isProcessing.value = false
     }
