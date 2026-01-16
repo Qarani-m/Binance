@@ -4,14 +4,24 @@ import { useRouter } from 'vue-router'
 import { useAuth } from '../composables/useAuth'
 
 const router = useRouter()
-const { login } = useAuth()
+const { register } = useAuth()
 const emailPhone = ref('')
+const password = ref('')
 const acceptTerms = ref(true)
 
-const nextStep = () => {
-    // In a real app we'd validate and register
-    login(emailPhone.value || 'newuser@example.com')
-    router.push('/dashboard')
+const nextStep = async () => {
+    if (!password.value) {
+        // Switch to a password entry state or just prompt
+        // For now, I'll assume we need to add a password field to the UI
+        return
+    }
+    try {
+        console.log(emailPhone.value, password.value)
+        await register(emailPhone.value, password.value)
+        router.push('/dashboard')
+    } catch (error) {
+        alert(error.response?.data?.message || 'Registration failed.')
+    }
 }
 </script>
 
@@ -103,6 +113,14 @@ const nextStep = () => {
                             <label class="text-[14px] font-medium text-[#848E9C]">Email/Phone number</label>
                             <div class="relative group">
                                 <input v-model="emailPhone" type="text" placeholder="Email/Phone (without country code)"
+                                    class="w-full bg-transparent border border-[#474D57] rounded-xl px-4 py-4 text-white focus:outline-none focus:border-primary transition-colors hover:border-[#5E6673]" />
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-[14px] font-medium text-[#848E9C]">Password</label>
+                            <div class="relative group">
+                                <input v-model="password" type="password" placeholder="Password"
                                     class="w-full bg-transparent border border-[#474D57] rounded-xl px-4 py-4 text-white focus:outline-none focus:border-primary transition-colors hover:border-[#5E6673]" />
                             </div>
                         </div>

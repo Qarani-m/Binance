@@ -209,15 +209,29 @@ const { ticker, orderBook, currentPrice } = useBinanceData('BTCUSDT')
                 </div>
 
                 <!-- Right Sidebar Groups -->
-                <div class="w-full lg:w-[280px] flex flex-col border-l border-[#2B3139] flex-none bg-[#0B0E11]">
+                <div class="w-full lg:w-[320px] flex flex-col border-l border-[#2B3139] flex-none bg-[#0B0E11]">
+                    <!-- Mobile Tab Toggles (Visible only < lg) -->
+                    <div class="lg:hidden flex border-b border-[#2B3139] bg-[#181A20] text-[12px] flex-none">
+                        <button class="flex-1 py-3 text-primary border-b-2 border-primary">Order Entry</button>
+                        <button class="flex-1 py-3 text-[#848E9C]">Order Book</button>
+                    </div>
+
+                    <!-- Order Entry (Top on mobile for easy access) -->
+                    <div
+                        class="h-auto lg:flex-1 bg-[#181A20] flex flex-col p-4 lg:p-0 border-b lg:border-none border-[#2B3139] flex-none lg:flex">
+                        <CoinMFuturesTradeForm />
+                    </div>
+
                     <!-- Order Book -->
                     <div
                         class="h-[400px] lg:h-[40%] bg-[#181A20] border-b border-[#2B3139] flex flex-col flex-none overflow-hidden">
                         <CoinMFuturesOrderBook :asks="orderBook.asks" :bids="orderBook.bids" :ticker="ticker" />
                     </div>
-                    <!-- Order Entry -->
-                    <div class="h-auto lg:flex-1 bg-[#181A20] flex flex-col p-4 lg:p-0">
-                        <CoinMFuturesTradeForm />
+
+                    <!-- Trades (Hidden on small screens) -->
+                    <div
+                        class="h-[300px] lg:flex-1 min-h-0 bg-[#181A20] border-b border-[#2B3139] flex flex-col overflow-hidden hidden lg:flex">
+                        <CoinMFuturesTrades />
                     </div>
                 </div>
             </div>

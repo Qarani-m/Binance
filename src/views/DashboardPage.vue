@@ -1,12 +1,31 @@
 <script setup>
+import { ref, onMounted, computed } from 'vue'
+import { useAuth } from '@/composables/useAuth'
 import AppHeader from '@/components/AppHeader.vue'
 import AppFooter from '@/components/AppFooter.vue'
 import MarketTabs from '@/components/market/MarketTabs.vue'
 import DepositSidebar from '@/components/dashboard/DepositSidebar.vue'
-import { ref } from 'vue'
 
+const { user, fetchProfile } = useAuth()
 const hiddenBalance = ref(false)
 const showDepositSidebar = ref(false)
+
+const btcBalance = computed(() => {
+    if (!user.value?.balances) return '0.00000000'
+    const btc = user.value.balances.find(b => b.coin === 'BTC')
+    return btc ? btc.available.toFixed(8) : '0.00000000'
+})
+
+const btcInUsd = computed(() => {
+    if (!user.value?.balances) return '0.00'
+    const btc = user.value.balances.find(b => b.coin === 'BTC')
+    // Mock price of BTC at $102,000 for display
+    return btc ? (btc.available * 102145.50).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'
+})
+
+onMounted(() => {
+    fetchProfile().catch(console.error)
+})
 </script>
 
 <template>
@@ -41,18 +60,19 @@ const showDepositSidebar = ref(false)
                             </svg>
                         </button>
                     </div>
-                    <router-link to="/wallet/deposit" class="text-primary hover:underline text-sm font-medium">Deposit
+                    <router-link to="/wallet/deposit/crypto"
+                        class="text-primary hover:underline text-sm font-medium">Deposit
                         History</router-link>
                 </div>
                 <div class="flex items-end gap-2 mb-8">
-                    <div class="text-[32px] font-bold tracking-tight">{{ hiddenBalance ? '******' : '0.00000000' }}
+                    <div class="text-[32px] font-bold tracking-tight">{{ hiddenBalance ? '******' : btcBalance }}
                         <span class="text-[20px] text-[#848E9C] font-medium ml-1">BTC</span>
                     </div>
                     <div class="text-[#848E9C] font-medium mb-1.5 pl-2 text-[14px]">≈ {{ hiddenBalance ? '******' :
-                        '$0.00' }}</div>
+                        '$' + btcInUsd }}</div>
                 </div>
 
-                <div class="flex items-center gap-3">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                     <button @click="showDepositSidebar = true"
                         class="bg-primary hover:bg-[#F0B90B] text-black px-6 py-2.5 rounded-lg font-bold text-sm transition-all transform active:scale-95">Deposit</button>
                     <button

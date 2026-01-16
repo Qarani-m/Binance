@@ -1,18 +1,23 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
+import api from '@/services/api'
+import { useAuth } from '@/composables/useAuth'
 import AppHeader from '@/components/AppHeader.vue'
 import AppFooter from '@/components/AppFooter.vue'
 
+const { user, fetchProfile } = useAuth()
 const currentStep = ref(1)
 const searchQuery = ref('')
 const selectedCoin = ref(null)
 const selectedNetwork = ref(null)
+const depositAddress = ref('')
+const isLoadingAddress = ref(false)
 
 const coins = [
     { name: 'Bitcoin', symbol: 'BTC', icon: '₿', color: '#F7931A' },
-    { name: 'Ethereum', symbol: 'ETH', icon: 'Ξ', color: '#627EEA' },
-    { name: 'Tether', symbol: 'USDT', icon: '₮', color: '#26A17B' },
-    { name: 'Binance Coin', symbol: 'BNB', icon: 'B', color: '#F3BA2F' },
+    // { name: 'Ethereum', symbol: 'ETH', icon: 'Ξ', color: '#627EEA' },
+    // { name: 'Tether', symbol: 'USDT', icon: '₮', color: '#26A17B' },
+    // { name: 'Binance Coin', symbol: 'BNB', icon: 'B', color: '#F3BA2F' },
 ]
 
 const filteredCoins = computed(() => {
@@ -24,28 +29,63 @@ const filteredCoins = computed(() => {
 })
 
 const networks = [
-    { name: 'BNB Smart Chain (BEP20)', fee: '0.00' },
-    { name: 'Bitcoin', fee: '0.0002' },
-    { name: 'Ethereum (ERC20)', fee: '0.005' },
+    // { name: 'BNB Smart Chain (BEP20)', symbol: 'BSC', fee: '0.00' },
+    { name: 'Bitcoin', symbol: 'BTC', fee: '0.0002' },
+    // { name: 'Ethereum (ERC20)', symbol: 'ETH', fee: '0.005' },
 ]
-
-const depositAddress = '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa'
 
 const selectCoin = (coin) => {
     selectedCoin.value = coin
     currentStep.value = 2
 }
 
-const selectNetwork = (network) => {
+const selectNetwork = async (network) => {
     selectedNetwork.value = network
     currentStep.value = 3
+    await fetchDepositAddress()
+}
+
+const fetchDepositAddress = async () => {
+    if (!selectedCoin.value || !selectedNetwork.value) return
+
+    isLoadingAddress.value = true
+    try {
+        const response = await api.get('/deposit-address', {
+            params: {
+                coin: selectedCoin.value.symbol,
+                network: selectedNetwork.value.symbol
+            }
+        })
+        depositAddress.value = response.data.address
+    } catch (error) {
+        console.error('Failed to fetch deposit address:', error)
+        depositAddress.value = 'Failed to load address'
+    } finally {
+        isLoadingAddress.value = false
+    }
+}
+
+const qrCodeUrl = computed(() => {
+    if (!depositAddress.value) return ''
+    return `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${depositAddress.value}`
+})
+
+const copyAddress = () => {
+    navigator.clipboard.writeText(depositAddress.value)
+    alert('Address copied to clipboard!')
 }
 
 const reset = () => {
     currentStep.value = 1
     selectedCoin.value = null
     selectedNetwork.value = null
+    depositAddress.value = ''
 }
+
+// Ensure profile is up to date
+onMounted(() => {
+    fetchProfile().catch(() => { })
+})
 </script>
 
 <template>
@@ -132,16 +172,17 @@ const reset = () => {
                                 </svg>
                             </div>
 
-                            <div class="grid grid-cols-4 gap-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                            <div
+                                class="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 gap-2 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
                                 <button v-for="coin in filteredCoins" :key="coin.symbol" @click="selectCoin(coin)"
-                                    class="flex flex-col items-center gap-2 p-4 rounded-xl hover:bg-[#1E2329] border border-transparent hover:border-[#2B3139] transition-all text-center">
+                                    class="flex flex-col items-center gap-2 p-3 sm:p-4 rounded-xl hover:bg-[#1e2329] border border-transparent hover:border-[#2b3139] transition-all text-center">
                                     <span
-                                        class="w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold shadow-lg"
+                                        class="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-base sm:text-lg font-bold shadow-lg"
                                         :style="{ backgroundColor: coin.color + '20', color: coin.color }">
                                         {{ coin.icon }}
                                     </span>
                                     <div>
-                                        <div class="text-sm font-bold text-white">{{ coin.symbol }}</div>
+                                        <div class="text-[12px] sm:text-sm font-bold text-white">{{ coin.symbol }}</div>
                                         <div class="text-[10px] text-[#848E9C]">{{ coin.name }}</div>
                                     </div>
                                 </button>
@@ -220,24 +261,27 @@ const reset = () => {
                         <div v-if="currentStep === 3"
                             class="space-y-6 animate-fadeIn bg-[#1E2329] rounded-2xl p-6 border border-[#2B3139]">
                             <div class="flex flex-col md:flex-row gap-8">
-                                <!-- QR Placeholder -->
+                                <!-- QR Code -->
                                 <div
                                     class="w-[140px] h-[140px] bg-white rounded-lg flex items-center justify-center p-2 shrink-0">
-                                    <div class="w-full h-full bg-slate-100 flex items-center justify-center">
-                                        <svg class="w-20 h-20 text-black/20" fill="currentColor" viewBox="0 0 24 24">
-                                            <path
-                                                d="M3 11h8V3H3v8zm2-6h4v4H5V5zM3 21h8v-8H3v8zm2-6h4v4H5v-4zM13 3v8h8V3h-8zm6 6h-4V5h4v4zm-6 12h3v-3h-3v3zm3-3h2v-2h-2v2zm2 3h3v-3h-3v3z" />
-                                        </svg>
+                                    <div v-if="isLoadingAddress"
+                                        class="w-full h-full bg-slate-100 flex items-center justify-center">
+                                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                                     </div>
+                                    <img v-else :src="qrCodeUrl" alt="QR Code" class="w-full h-full object-contain" />
                                 </div>
 
                                 <div class="flex-1 space-y-4">
                                     <div class="space-y-1">
                                         <label class="text-[12px] text-[#848E9C]">Address</label>
                                         <div class="flex items-center gap-2">
-                                            <span class="text-sm font-mono break-all text-white font-bold">{{
+                                            <span v-if="isLoadingAddress"
+                                                class="h-5 w-48 bg-[#2B3139] animate-pulse rounded"></span>
+                                            <span v-else class="text-sm font-mono break-all text-white font-bold">{{
                                                 depositAddress }}</span>
-                                            <button class="text-primary hover:opacity-80">
+                                            <button @click="copyAddress"
+                                                class="text-primary hover:opacity-80 disabled:opacity-50"
+                                                :disabled="isLoadingAddress">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">
                                                     <path
@@ -252,7 +296,7 @@ const reset = () => {
                                         <div class="flex-1 space-y-1">
                                             <div class="text-[12px] text-[#848E9C]">Minimum Deposit</div>
                                             <div class="text-sm font-bold text-white">0.00000001 {{ selectedCoin?.symbol
-                                            }}</div>
+                                                }}</div>
                                         </div>
                                         <div class="flex-1 space-y-1">
                                             <div class="text-[12px] text-[#848E9C]">Deposit Arrival</div>
@@ -279,7 +323,7 @@ const reset = () => {
                         <h3 class="text-lg font-bold">Recent Deposits</h3>
                         <button class="text-xs text-[#848E9C] hover:text-primary transition-colors">More ></button>
                     </div>
-                    <div
+                    <div v-if="!user?.deposits || user.deposits.length === 0"
                         class="bg-[#1E2329] rounded-2xl border border-[#2B3139] p-20 flex flex-col items-center justify-center gap-4 text-center">
                         <div
                             class="w-16 h-16 bg-[#2B3139] rounded-full flex items-center justify-center text-2xl animate-pulse">
@@ -288,6 +332,31 @@ const reset = () => {
                         <div>
                             <p class="text-white font-bold">No records found</p>
                             <p class="text-[#848E9C] text-xs mt-1">Your recent deposits will appear here</p>
+                        </div>
+                    </div>
+                    <div v-else class="space-y-2">
+                        <div v-for="deposit in user.deposits" :key="deposit.id"
+                            class="bg-[#1E2329] rounded-xl border border-[#2B3139] p-4 flex items-center justify-between hover:border-primary/30 transition-all">
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                                    {{ (deposit.coin || 'CRYPTO').slice(0, 1) }}
+                                </div>
+                                <div>
+                                    <div class="text-sm font-bold text-white">{{ deposit.amount }} {{ deposit.coin }}
+                                    </div>
+                                    <div class="text-[10px] text-[#848E9C] font-mono">{{ (deposit.txId || '').slice(0,
+                                        20) }}...</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-[12px]"
+                                    :class="deposit.status === 'COMPLETED' ? 'text-[#26A17B]' : 'text-primary'">
+                                    {{ deposit.status }}
+                                </div>
+                                <div class="text-[10px] text-[#848E9C]">{{ new Date(deposit.createdAt).toLocaleString()
+                                }}</div>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -31,36 +31,45 @@ const pair = computed(() => route.params.pair || 'BTC/USDT')
         </div>
 
         <!-- Main Body: Sections 3-8 -->
-        <main class="flex-1 flex overflow-hidden">
-            <!-- Section 3: Order Book (Left Sidebar) -->
-            <aside class="w-[320px] flex-none border-r border-[#2B3139]">
+        <main class="flex-1 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden">
+            <!-- Mobile Tab Toggles -->
+            <div class="lg:hidden flex border-b border-[#2B3139] bg-[#1E2329] text-[12px] flex-none">
+                <button class="flex-1 py-3 text-primary border-b-2 border-primary">Trade</button>
+                <button class="flex-1 py-3 text-[#848E9C]">Order Book</button>
+                <button class="flex-1 py-3 text-[#848E9C]">Market</button>
+            </div>
+
+            <!-- Section 3: Order Book (Hidden on small screens by default or below Chart) -->
+            <aside class="hidden lg:flex w-[320px] flex-none border-r border-[#2B3139]">
                 <OrderBook :pair="pair" />
             </aside>
 
             <!-- Center Column: Chart & Order Entry -->
             <div class="flex-1 flex flex-col min-w-0 border-r border-[#2B3139]">
                 <!-- Section 4: Main Chart Area -->
-                <div class="flex-[3] min-h-0 bg-[#0B0E11]">
+                <div class="flex-none h-[400px] lg:flex-1 min-h-0 bg-[#0B0E11]">
                     <TradingChart />
                 </div>
                 <!-- Section 5: Order Entry Panel -->
-                <div class="flex-[2] min-h-0 border-t border-[#2B3139]">
+                <div class="flex-none lg:flex-1 min-h-0 border-t border-[#2B3139] p-4 lg:p-0">
                     <TradeForm />
                 </div>
             </div>
 
             <!-- Right Sidebar: Pairs List & Market Trades & Top Movers -->
-            <aside class="w-[300px] flex-none flex flex-col">
-                <!-- Section 7: Trading Pairs List -->
-                <div class="h-[350px] flex-none border-b border-[#2B3139]">
+            <aside class="w-full lg:w-[300px] flex-none flex flex-col bg-[#1E2329]">
+                <!-- Section 7: Trading Pairs List (Hidden on mobile) -->
+                <div class="hidden lg:block h-[350px] flex-none border-b border-[#2B3139]">
                     <MarketPairsList />
                 </div>
-                <!-- Section 6: Market Trades List -->
-                <div class="flex-1 min-h-0 border-b border-[#2B3139]">
+                <!-- Section 6: Market Trades List (Optional on mobile) -->
+                <div class="h-[300px] lg:flex-1 min-h-0 border-b border-[#2B3139]">
                     <MarketTrades />
                 </div>
-                <!-- Section 8: Top Movers & Navigation -->
-                <TopMovers />
+                <!-- Section 8: Top Movers & Navigation (Hidden on mobile) -->
+                <div class="hidden lg:block">
+                    <TopMovers />
+                </div>
             </aside>
         </main>
 

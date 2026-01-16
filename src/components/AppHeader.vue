@@ -348,8 +348,27 @@ const closeMobileMenu = () => {
       </div>
 
       <div class="mt-auto flex flex-col gap-4">
-        <button class="w-full bg-[#2b3139] text-white font-bold py-3 rounded-lg">Log In</button>
-        <button class="w-full bg-primary text-black font-extrabold py-3 rounded-lg">Sign Up</button>
+        <template v-if="!isLoggedIn">
+          <router-link to="/login" @click="closeMobileMenu"
+            class="w-full bg-[#2b3139] text-white font-bold py-3 rounded-lg text-center">Log In</router-link>
+          <router-link to="/register" @click="closeMobileMenu"
+            class="w-full bg-primary text-black font-extrabold py-3 rounded-lg text-center">Sign Up</router-link>
+        </template>
+        <template v-else>
+          <div class="p-4 bg-[#1e2329] rounded-lg">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-10 h-10 rounded-full bg-[#2b3139] flex items-center justify-center text-primary font-bold">
+                {{ user?.email?.[0]?.toUpperCase() }}
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="text-white font-bold truncate">{{ user?.email }}</div>
+                <div class="text-[#848E9C] text-xs">Standard User</div>
+              </div>
+            </div>
+            <button @click="handleLogout(); closeMobileMenu()"
+              class="w-full bg-[#F6465D]/10 text-[#F6465D] font-bold py-3 rounded-lg">Log Out</button>
+          </div>
+        </template>
       </div>
     </div>
   </header>

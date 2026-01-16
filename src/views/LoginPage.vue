@@ -1,7 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-
 import { useAuth } from '../composables/useAuth'
 
 const router = useRouter()
@@ -16,7 +15,6 @@ const dontShowAgain = ref(false)
 const maskedEmail = computed(() => {
     if (!emailPhone.value) return ''
     if (!emailPhone.value.includes('@')) {
-        // Simple phone masking or just return if not email
         if (emailPhone.value.length > 7) {
             return emailPhone.value.slice(0, 3) + '****' + emailPhone.value.slice(-3)
         }
@@ -35,16 +33,21 @@ const nextStep = () => {
     }
 }
 
-const finishLogin = () => {
-    login(emailPhone.value || 'user@example.com')
-    router.push('/dashboard')
+const finishLogin = async () => {
+    try {
+        await login(emailPhone.value, password.value)
+        router.push('/dashboard')
+    } catch (error) {
+        alert(error.response?.data?.message || 'Login failed. Please check your credentials.')
+        step.value = 1 // Reset to step 1 on error for simplicity
+    }
 }
 </script>
 
 <template>
     <div class="min-h-screen bg-[#0B0E11] text-[#EAECEF] flex flex-col font-sans selection:bg-primary/30">
         <!-- Main Content -->
-        <main class="flex-1 flex flex-col items-center justify-center px-4 py-8">
+        <main class="flex-1 flex flex-col items-center justify-center px-4 py-8 sm:py-12">
             <!-- Logo -->
             <router-link to="/" class="mb-10 block">
                 <div class="flex items-center gap-2">

@@ -19,18 +19,20 @@ const activeMode = ref('buysell')
 
         <main class="flex-1 mt-[64px]">
             <!-- Main Navigation -->
-            <div class="max-w-[1280px] mx-auto px-4 md:px-6 pt-8">
-                <div class="flex items-center gap-8 border-b border-[#2b3139]">
-                    <button @click="activeMode = 'buysell'" class="pb-4 text-[16px] font-bold transition-all relative"
+            <div class="max-w-[1280px] mx-auto px-4 md:px-6 pt-8 overflow-x-auto no-scrollbar">
+                <div class="flex items-center gap-6 md:gap-8 border-b border-[#2b3139] min-w-max">
+                    <button @click="activeMode = 'buysell'"
+                        class="pb-4 text-[14px] sm:text-[16px] font-bold transition-all relative"
                         :class="activeMode === 'buysell' ? 'text-primary border-b-2 border-primary' : 'text-text-secondary hover:text-white'">
                         Buy & Sell
                     </button>
-                    <button @click="activeMode = 'deposit'" class="pb-4 text-[16px] font-medium transition-all relative"
+                    <button @click="activeMode = 'deposit'"
+                        class="pb-4 text-[14px] sm:text-[16px] font-medium transition-all relative"
                         :class="activeMode === 'deposit' ? 'text-primary border-b-2 border-primary' : 'text-text-secondary hover:text-white'">
                         Deposit
                     </button>
                     <button @click="activeMode = 'withdraw'"
-                        class="pb-4 text-[16px] font-medium transition-all relative"
+                        class="pb-4 text-[14px] sm:text-[16px] font-medium transition-all relative"
                         :class="activeMode === 'withdraw' ? 'text-primary border-b-2 border-primary' : 'text-text-secondary hover:text-white'">
                         Withdraw
                     </button>
