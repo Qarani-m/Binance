@@ -5,10 +5,12 @@ import AppHeader from '@/components/AppHeader.vue'
 import AppFooter from '@/components/AppFooter.vue'
 import MarketTabs from '@/components/market/MarketTabs.vue'
 import DepositSidebar from '@/components/dashboard/DepositSidebar.vue'
+import ConvertModal from '@/components/dashboard/ConvertModal.vue'
 
 const { user, fetchProfile } = useAuth()
 const hiddenBalance = ref(false)
 const showDepositSidebar = ref(false)
+const showConvertModal = ref(false)
 
 const btcBalance = computed(() => {
     if (!user.value?.balances) return '0.00000000'
@@ -19,8 +21,13 @@ const btcBalance = computed(() => {
 const btcInUsd = computed(() => {
     if (!user.value?.balances) return '0.00'
     const btc = user.value.balances.find(b => b.coin === 'BTC')
-    // Mock price of BTC at $102,000 for display
     return btc ? (btc.available * 102145.50).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'
+})
+
+const usdtBalance = computed(() => {
+    if (!user.value?.balances) return '0.00'
+    const usdt = user.value.balances.find(b => b.coin === 'USDT')
+    return usdt ? usdt.available.toFixed(2) : '0.00'
 })
 
 onMounted(() => {
@@ -64,12 +71,20 @@ onMounted(() => {
                         class="text-primary hover:underline text-sm font-medium">Deposit
                         History</router-link>
                 </div>
-                <div class="flex items-end gap-2 mb-8">
-                    <div class="text-[32px] font-bold tracking-tight">{{ hiddenBalance ? '******' : btcBalance }}
-                        <span class="text-[20px] text-[#848E9C] font-medium ml-1">BTC</span>
+                <div class="flex flex-col sm:flex-row sm:items-end gap-x-8 gap-y-4 mb-8">
+                    <div class="flex items-end gap-2">
+                        <div class="text-[32px] font-bold tracking-tight">{{ hiddenBalance ? '******' : btcBalance }}
+                            <span class="text-[20px] text-[#848E9C] font-medium ml-1">BTC</span>
+                        </div>
+                        <div class="text-[#848E9C] font-medium mb-1.5 pl-2 text-[14px]">≈ {{ hiddenBalance ? '******' :
+                            '$' + btcInUsd }}</div>
                     </div>
-                    <div class="text-[#848E9C] font-medium mb-1.5 pl-2 text-[14px]">≈ {{ hiddenBalance ? '******' :
-                        '$' + btcInUsd }}</div>
+                    <div class="flex items-end gap-2 border-l border-[#2B3139] pl-8">
+                        <div class="text-[24px] font-bold tracking-tight text-[#EAECEF]">{{ hiddenBalance ? '******' :
+                            usdtBalance }}
+                            <span class="text-[16px] text-[#848E9C] font-medium ml-1">USDT</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
@@ -79,6 +94,8 @@ onMounted(() => {
                         class="bg-[#2B3139] text-white hover:bg-[#3A4049] px-6 py-2.5 rounded-lg font-bold text-sm transition-all transform active:scale-95 text-center">Withdraw</router-link>
                     <router-link to="/wallet/transfer"
                         class="bg-[#2B3139] text-white hover:bg-[#3A4049] px-6 py-2.5 rounded-lg font-bold text-sm transition-all transform active:scale-95 text-center">Transfer</router-link>
+                    <button @click="showConvertModal = true"
+                        class="bg-[#2B3139] text-primary hover:bg-[#3A4049] border border-primary/20 px-6 py-2.5 rounded-lg font-bold text-sm transition-all transform active:scale-95 text-center">Convert</button>
                 </div>
             </div>
 
@@ -114,6 +131,9 @@ onMounted(() => {
         </main>
 
         <AppFooter />
+
+        <!-- Convert Modal -->
+        <ConvertModal :isOpen="showConvertModal" @close="showConvertModal = false" @success="fetchProfile" />
 
         <!-- Deposit Sidebar -->
         <DepositSidebar :isOpen="showDepositSidebar" @close="showDepositSidebar = false" />

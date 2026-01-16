@@ -45,7 +45,7 @@ const maxSum = computed(() => {
 
         <!-- Column Headers -->
         <div class="grid grid-cols-3 px-3 py-1.5 text-[#848E9C] font-medium leading-none">
-            <div class="text-left">Price (USDT)</div>
+            <div class="text-left">Price (USDC)</div>
             <div class="text-right">Size (BTC)</div>
             <div class="text-right">Sum (BTC)</div>
         </div>

@@ -13,7 +13,7 @@ import TopMovers from '@/components/trading/TopMovers.vue'
 import AppHeader from '@/components/AppHeader.vue'
 
 const route = useRoute()
-const pair = computed(() => route.params.pair || 'BTC/USDT')
+const pair = computed(() => route.params.pair || 'BTC/USDC')
 </script>
 
 <template>

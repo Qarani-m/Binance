@@ -13,7 +13,7 @@ import { useFutures } from '@/composables/useFutures'
 const { positions, closePosition, fetchPositions } = useFutures()
 const activeSideTab = ref('trades')
 const activeTab = ref('Chart')
-const { ticker, orderBook } = useBinanceData('BTCUSDT')
+const { ticker, orderBook } = useBinanceData('BTCUSDC')
 
 onMounted(() => {
     fetchPositions()
@@ -21,14 +21,14 @@ onMounted(() => {
 })
 
 const tickerItems = ref([
-    { ticker: 'TUSDТ', change: -6.45, price: 0.4639, isNegative: true },
-    { ticker: 'BTCUSDT', change: -0.07, price: 90622.0, isNegative: true },
-    { ticker: 'RIVERUSDT', change: -16.57, price: 13.062, isNegative: true },
-    { ticker: 'PIPIPNUSDT', change: 1.66, price: 0.41302, isNegative: false },
-    { ticker: 'RVNUSDT', change: -3.44, price: 0.03936, isNegative: true },
-    { ticker: 'SULUSDT', change: -0.02, price: 1.8066, isNegative: true },
-    { ticker: 'DEEPUSDT', change: -7.50, price: 0.05079, isNegative: true },
-    { ticker: 'OGUSDТ', change: -1.36, price: 4.82, isNegative: true },
+    { ticker: 'TUSDC', change: -6.45, price: 0.4639, isNegative: true },
+    { ticker: 'BTCUSDC', change: -0.07, price: 90622.0, isNegative: true },
+    { ticker: 'RIVERUSDC', change: -16.57, price: 13.062, isNegative: true },
+    { ticker: 'PIPIPNUSDC', change: 1.66, price: 0.41302, isNegative: false },
+    { ticker: 'RVNUSDC', change: -3.44, price: 0.03936, isNegative: true },
+    { ticker: 'SULUSDC', change: -0.02, price: 1.8066, isNegative: true },
+    { ticker: 'DEEPUSDC', change: -7.50, price: 0.05079, isNegative: true },
+    { ticker: 'OGUSDC', change: -1.36, price: 4.82, isNegative: true },
 ])
 
 let interval = null
@@ -119,8 +119,8 @@ onUnmounted(() => {
                                     <h3 class="text-white font-bold mb-2">Contract Specifications</h3>
                                     <div class="grid grid-cols-2 gap-4 text-[#848E9C]">
                                         <div><span class="text-white">Contract Type:</span> Perpetual</div>
-                                        <div><span class="text-white">Settlement:</span> USDT-Margined</div>
-                                        <div><span class="text-white">Tick Size:</span> 0.1 USDT</div>
+                                        <div><span class="text-white">Settlement:</span> USDC-Margined</div>
+                                        <div><span class="text-white">Tick Size:</span> 0.1 USDC</div>
                                         <div><span class="text-white">Max Leverage:</span> 125x</div>
                                     </div>
                                 </div>
@@ -141,10 +141,10 @@ onUnmounted(() => {
                                         <div class="flex gap-2 text-[11px]">
                                             <button class="text-[#F0B90B] px-2 py-1 bg-[#2B3139] rounded">5m</button>
                                             <button
-                                                class="text-[#848E9C] px-2 py-1 hover:bg-[#2B3139] rounded">USDT</button>
+                                                class="text-[#848E9C] px-2 py-1 hover:bg-[#2B3139] rounded">USDC</button>
                                         </div>
                                     </div>
-                                    <div class="text-[10px] text-[#848E9C] mb-2">Open Interest (USDT): <span
+                                    <div class="text-[10px] text-[#848E9C] mb-2">Open Interest (USDC): <span
                                             class="text-white">$2.1B</span></div>
                                     <svg viewBox="0 0 500 140" class="w-full h-36" preserveAspectRatio="none">
                                         <line v-for="i in 5" :key="'grid-h' + i" :x1="0" :y1="i * 28" :x2="500"
@@ -272,17 +272,21 @@ onUnmounted(() => {
                                             </div>
                                         </td>
                                         <td class="px-4 text-[#EAECEF]">{{ pos.size }} BTC</td>
-                                        <td class="px-4 text-[#EAECEF]">{{ pos.entryPrice.toLocaleString() }}</td>
-                                        <td class="px-4 text-[#EAECEF]">{{ pos.markPrice.toLocaleString() }}</td>
-                                        <td class="px-4 text-[#F0B90B]">{{ pos.liquidationPrice.toFixed(1) }}</td>
-                                        <td class="px-4 text-[#EAECEF]">{{ pos.margin.toFixed(2) }} USDT</td>
+                                        <td class="px-4 text-[#EAECEF]">{{ pos.entryPrice?.toLocaleString() || '0' }}
+                                        </td>
+                                        <td class="px-4 text-[#EAECEF]">{{ pos.markPrice?.toLocaleString() || '0' }}
+                                        </td>
+                                        <td class="px-4 text-[#F0B90B]">{{ pos.liquidationPrice?.toFixed(1) || '0.0' }}
+                                        </td>
+                                        <td class="px-4 text-[#EAECEF]">{{ pos.margin?.toFixed(2) || '0.00' }} USDC</td>
                                         <td class="px-4">
-                                            <div :class="pos.unrealizedPnl >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]'"
+                                            <div :class="(pos.unrealizedPnl || 0) >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]'"
                                                 class="font-medium">
-                                                {{ pos.unrealizedPnl >= 0 ? '+' : '' }}{{ pos.unrealizedPnl.toFixed(2)
-                                                }} USDT
-                                                <span class="text-[10px] ml-1">({{ pos.roe >= 0 ? '+' : '' }}{{
-                                                    pos.roe.toFixed(2) }}%)</span>
+                                                {{ (pos.unrealizedPnl || 0) >= 0 ? '+' : '' }}{{
+                                                    pos.unrealizedPnl?.toFixed(2) || '0.00'
+                                                }} USDC
+                                                <span class="text-[10px] ml-1">({{ (pos.roe || 0) >= 0 ? '+' : '' }}{{
+                                                    pos.roe?.toFixed(2) || '0.00' }}%)</span>
                                             </div>
                                         </td>
                                         <td class="px-4 text-right">

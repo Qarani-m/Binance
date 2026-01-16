@@ -1,6 +1,6 @@
 <script setup>
 const props = defineProps({
-    pair: { type: String, default: 'BTCUSDT' },
+    pair: { type: String, default: 'BTCUSDC' },
     ticker: {
         type: Object,
         default: () => ({
@@ -79,7 +79,7 @@ const props = defineProps({
                 <span class="text-[#848E9C] text-[11px]">Index</span>
                 <span class="text-white text-[12px] font-mono underline decoration-dotted decoration-[#848E9C]">{{
                     ticker.indexPrice?.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })
-                }}</span>
+                    }}</span>
             </div>
             <div class="flex flex-col flex-none gap-1 leading-none">
                 <span class="text-[#848E9C] text-[11px]">Funding (8h) / Countdown</span>
@@ -101,11 +101,11 @@ const props = defineProps({
                 }) }}</span>
             </div>
             <div class="flex flex-col flex-none gap-1 leading-none text-right xl:flex">
-                <span class="text-[#848E9C] text-[11px]">24h Vol(USDT)</span>
+                <span class="text-[#848E9C] text-[11px]">24h Vol(USDC)</span>
                 <span class="text-white text-[12px] font-mono">{{ (ticker.volQuote / 1000000000)?.toFixed(2) }}B</span>
             </div>
             <div class="flex flex-col flex-none gap-1 leading-none text-right 2xl:flex">
-                <span class="text-[#848E9C] text-[11px]">Open Interest(USDT)</span>
+                <span class="text-[#848E9C] text-[11px]">Open Interest(USDC)</span>
                 <span class="text-white text-[12px] font-mono">{{ ticker.openInterest?.toFixed(2) || '8.70' }}B</span>
             </div>
         </div>

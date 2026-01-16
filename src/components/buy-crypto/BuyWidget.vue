@@ -10,6 +10,47 @@ const activeTab = ref('buy')
 const spendAmount = ref('500.00')
 const receiveAmount = ref('538.50')
 const sellAmount = ref('100.00')
+const receiveSellAmount = ref('92.45')
+
+const EUR_TO_USDC = 1.077
+const USDC_TO_EUR = 0.9245
+
+// Watchers for Buy Tab
+import { watch } from 'vue'
+
+watch(spendAmount, (newVal) => {
+    if (activeTab.value === 'buy') {
+        const val = parseFloat(newVal)
+        if (!isNaN(val)) {
+            const calculated = (val * EUR_TO_USDC).toFixed(2)
+            if (receiveAmount.value !== calculated) {
+                receiveAmount.value = calculated
+            }
+        }
+    }
+})
+
+watch(receiveAmount, (newVal) => {
+    if (activeTab.value === 'buy') {
+        const val = parseFloat(newVal)
+        if (!isNaN(val)) {
+            const calculated = (val / EUR_TO_USDC).toFixed(2)
+            if (spendAmount.value !== calculated) {
+                spendAmount.value = calculated
+            }
+        }
+    }
+})
+
+// Watcher for Sell Tab
+watch(sellAmount, (newVal) => {
+    const val = parseFloat(newVal)
+    if (!isNaN(val)) {
+        receiveSellAmount.value = (val * USDC_TO_EUR).toFixed(2)
+    } else {
+        receiveSellAmount.value = '0.00'
+    }
+})
 
 const hasAssets = computed(() => {
     if (!user.value?.balances) return false
@@ -233,7 +274,8 @@ onMounted(() => {
                             <label class="text-text-secondary text-[12px] font-medium">Receive (Estimated)</label>
                             <div
                                 class="flex items-center justify-between bg-[#0b0e11] border border-[#2b3139] rounded-xl px-4 py-4 focus-within:border-primary transition-colors opacity-80">
-                                <span class="text-white text-[24px] font-bold leading-none">92.45</span>
+                                <span class="text-white text-[24px] font-bold leading-none">{{ receiveSellAmount
+                                    }}</span>
                                 <div
                                     class="flex items-center gap-2 bg-[#1e2329] px-3 py-1.5 rounded-lg border border-[#2b3139] cursor-pointer hover:border-primary">
                                     <div

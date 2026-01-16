@@ -1,12 +1,20 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
 import { useNotification } from '@/composables/useNotification'
 import { useFutures } from '@/composables/useFutures'
 
-const { isLoggedIn, fetchProfile } = useAuth()
+const { isLoggedIn, user, fetchProfile } = useAuth()
 const { showNotification } = useNotification()
-const { addOrder } = useFutures()
+const { addOrder, fetchPositions } = useFutures()
+const router = useRouter()
+
+const btcBalance = computed(() => {
+    if (!user.value?.balances) return '0.00000000'
+    const btc = user.value.balances.find(b => b.coin === 'BTC')
+    return btc ? btc.available.toFixed(8) : '0.00000000'
+})
 
 const activeTab = ref('limit')
 const contSize = ref('')
@@ -32,7 +40,7 @@ const handleBuyLong = async () => {
         })
         contSize.value = ''
         showNotification('Order placed successfully!', 'success')
-        await fetchProfile()
+        await Promise.all([fetchProfile(), fetchPositions()])
     } catch (err) {
         showNotification(err.response?.data?.error || err.response?.data?.message || err.message, 'error')
     } finally {
@@ -55,12 +63,24 @@ const handleSellShort = async () => {
         })
         contSize.value = ''
         showNotification('Order placed successfully!', 'success')
-        await fetchProfile()
+        await Promise.all([fetchProfile(), fetchPositions()])
     } catch (err) {
         showNotification(err.response?.data?.error || err.response?.data?.message || err.message, 'error')
     } finally {
         loading.value = false
     }
+}
+
+const handleTransfer = () => {
+    router.push('/wallet/transfer')
+}
+
+const handleBuyCrypto = () => {
+    router.push('/buy-crypto')
+}
+
+const handleSwap = () => {
+    showNotification('Swap feature coming soon', 'info')
 }
 </script>
 
@@ -112,7 +132,8 @@ const handleSellShort = async () => {
             <!-- Form Inputs -->
             <div class="space-y-4">
                 <div class="flex justify-between items-center px-0.5">
-                    <span class="text-[#848E9C]">Avbl <span class="text-[#EAECEF] font-medium">- BTC</span></span>
+                    <span class="text-[#848E9C]">Avbl <span class="text-[#EAECEF] font-medium">{{ btcBalance }}
+                            BTC</span></span>
                     <svg class="w-3.5 h-3.5 text-[#848E9C] cursor-pointer hover:text-white" fill="none"
                         stroke="currentColor" viewBox="0 0 24 24">
                         <path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" stroke-width="2" />
@@ -265,12 +286,12 @@ const handleSellShort = async () => {
                 </div>
             </div>
             <div class="flex gap-2">
-                <button
+                <button @click="handleTransfer"
                     class="flex-1 bg-[#2B3139] hover:bg-[#323a45] text-white py-1.5 rounded transition-colors uppercase text-[9px] font-bold">Transfer</button>
-                <button
+                <button @click="handleBuyCrypto"
                     class="flex-1 bg-[#2B3139] hover:bg-[#323a45] text-white py-1.5 rounded transition-colors uppercase text-[9px] font-bold">Buy
                     Crypto</button>
-                <button
+                <button @click="handleSwap"
                     class="flex-1 bg-[#2B3139] hover:bg-[#323a45] text-white py-1.5 rounded transition-colors uppercase text-[9px] font-bold">Swap</button>
             </div>
         </div>

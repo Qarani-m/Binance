@@ -7,7 +7,7 @@ import TradingChart from '@/components/trading/TradingChart.vue'
 import OrderBook from '@/components/trading/OrderBook.vue'
 import TradeForm from '@/components/trading/TradeForm.vue'
 
-const pair = ref('LISA/USDT')
+const pair = ref('LISA/USDC')
 </script>
 
 <template>

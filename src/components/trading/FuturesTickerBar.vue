@@ -2,16 +2,16 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 
 const pairs = ref([
-    { name: 'BTCUSDT', change: -0.07, isNegative: true },
-    { name: 'ETHUSDT', change: -0.57, isNegative: true },
-    { name: 'BNBUSDT', change: 1.31, isNegative: false },
-    { name: 'SOLUSDT', change: 2.45, isNegative: false },
-    { name: 'XRPUSDT', change: -0.12, isNegative: true },
-    { name: 'ADAUSDT', change: 0.89, isNegative: false },
-    { name: 'DOGEUSDT', change: -1.56, isNegative: true },
-    { name: 'MATICUSDT', change: 0.45, isNegative: false },
-    { name: 'DOTUSDT', change: -0.78, isNegative: true },
-    { name: 'AVAXUSDT', change: 1.23, isNegative: false },
+    { name: 'BTCUSDC', change: -0.07, isNegative: true },
+    { name: 'ETHUSDC', change: -0.57, isNegative: true },
+    { name: 'BNBUSDC', change: 1.31, isNegative: false },
+    { name: 'SOLUSDC', change: 2.45, isNegative: false },
+    { name: 'XRPUSDC', change: -0.12, isNegative: true },
+    { name: 'ADAUSDC', change: 0.89, isNegative: false },
+    { name: 'DOGEUSDC', change: -1.56, isNegative: true },
+    { name: 'MATICUSDC', change: 0.45, isNegative: false },
+    { name: 'DOTUSDC', change: -0.78, isNegative: true },
+    { name: 'AVAXUSDC', change: 1.23, isNegative: false },
 ])
 
 let interval = null
@@ -45,7 +45,7 @@ onUnmounted(() => {
                         d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
                 </svg>
                 <span class="font-medium"
-                    :class="pair.name === 'BTCUSDT' ? 'text-white' : 'text-[#848E9C] hover:text-white'">{{ pair.name
+                    :class="pair.name === 'BTCUSDC' ? 'text-white' : 'text-[#848E9C] hover:text-white'">{{ pair.name
                     }}</span>
                 <span :class="pair.isNegative ? 'text-[#F6465D]' : 'text-[#0ECB81]'">{{ pair.isNegative ? '' : '+' }}{{
                     pair.change }}%</span>

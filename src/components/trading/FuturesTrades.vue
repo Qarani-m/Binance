@@ -27,7 +27,7 @@ const trades = ref([
 
         <!-- Column Headers -->
         <div class="grid grid-cols-3 px-3 py-1.5 text-[#848E9C] leading-none">
-            <div class="text-left font-medium">Price (USDT)</div>
+            <div class="text-left font-medium">Price (USDC)</div>
             <div class="text-right font-medium">Amount (BTC)</div>
             <div class="text-right font-medium">Time</div>
         </div>

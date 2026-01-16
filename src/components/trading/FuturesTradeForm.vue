@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
 import { useFutures } from '@/composables/useFutures'
 import { useNotification } from '@/composables/useNotification'
@@ -7,6 +8,7 @@ import { useNotification } from '@/composables/useNotification'
 const { isLoggedIn, user } = useAuth()
 const { addOrder, loading } = useFutures()
 const { showNotification } = useNotification()
+const router = useRouter()
 const activeTab = ref('limit')
 const btcAmount = ref('')
 const price = ref('95573.3') // Removed comma for easier calculation
@@ -15,19 +17,19 @@ const leverage = ref('20x')
 const showTPSL = ref(false)
 const showReduceOnly = ref(false)
 
-const usdtBalance = computed(() => {
+const usdcBalance = computed(() => {
     if (!user.value?.balances) return 0
-    const usdt = user.value.balances.find(b => b.coin === 'USDT')
-    return usdt ? usdt.available : 0
+    const usdc = user.value.balances.find(b => b.coin === 'USDC')
+    return usdc ? usdc.available : 0
 })
 
 const sliderValue = ref(0)
 
 const setPercentage = (percent) => {
     sliderValue.value = percent
-    if (usdtBalance.value > 0) {
+    if (usdcBalance.value > 0) {
         const lev = parseInt(leverage.value) || 1
-        const maxBuyingPower = usdtBalance.value * lev
+        const maxBuyingPower = usdcBalance.value * lev
         const amount = (maxBuyingPower * (percent / 100)) / parseFloat(price.value.replace(/,/g, ''))
         btcAmount.value = amount.toFixed(4)
     }
@@ -37,7 +39,7 @@ const handleBuyLong = async () => {
     if (!btcAmount.value || loading.value) return
     try {
         await addOrder({
-            symbol: 'BTCUSDT',
+            symbol: 'BTCUSDC',
             side: 'BUY',
             type: activeTab.value,
             price: price.value,
@@ -57,7 +59,7 @@ const handleSellShort = async () => {
     if (!btcAmount.value || loading.value) return
     try {
         await addOrder({
-            symbol: 'BTCUSDT',
+            symbol: 'BTCUSDC',
             side: 'SELL',
             type: activeTab.value,
             price: price.value,
@@ -71,6 +73,18 @@ const handleSellShort = async () => {
     } catch (err) {
         showNotification(err.response?.data?.error || err.response?.data?.message || err.message, 'error')
     }
+}
+
+const handleTransfer = () => {
+    router.push('/wallet/transfer')
+}
+
+const handleBuyCrypto = () => {
+    router.push('/buy-crypto')
+}
+
+const handleSwap = () => {
+    showNotification('Swap feature coming soon', 'info')
 }
 </script>
 
@@ -127,7 +141,7 @@ const handleSellShort = async () => {
             <div class="flex justify-between items-center text-[10px]">
                 <span class="text-[#848E9C]">Avbl</span>
                 <div class="flex items-center gap-1">
-                    <span class="text-[#EAECEF] font-medium">{{ usdtBalance.toLocaleString() }} USDT</span>
+                    <span class="text-[#EAECEF] font-medium">{{ usdcBalance.toLocaleString() }} USDC</span>
                     <svg class="w-3 h-3 text-primary cursor-pointer" fill="none" stroke="currentColor"
                         viewBox="0 0 24 24">
                         <path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" stroke-width="2" />
@@ -144,7 +158,7 @@ const handleSellShort = async () => {
                         class="w-full bg-[#2B3139] border border-transparent focus:border-[#FCD535] rounded pl-3 pr-[88px] py-2 text-right font-mono text-white text-[13px] outline-none transition-all">
                     <span
                         class="absolute left-2 top-1/2 -translate-y-1/2 text-[#848E9C] pointer-events-none">Price</span>
-                    <span class="absolute right-[45px] top-1/2 -translate-y-1/2 text-[#848E9C] font-medium">USDT</span>
+                    <span class="absolute right-[45px] top-1/2 -translate-y-1/2 text-[#848E9C] font-medium">USDC</span>
                     <button
                         class="absolute right-1 top-1/2 -translate-y-1/2 text-[10px] text-[#848E9C] hover:text-white px-2 py-0.5 bg-[#181A20] rounded border border-[#2B3139]">BBO</button>
                 </div>
@@ -217,12 +231,12 @@ const handleSellShort = async () => {
                     <div
                         class="grid grid-cols-2 gap-x-4 gap-y-1.5 text-[10px] text-[#848E9C] border-t border-[#2B3139] pt-3">
                         <div class="flex justify-between"><span>Liq Price</span><span class="text-[#EAECEF]">--
-                                USDT</span></div>
+                                USDC</span></div>
                         <div class="flex justify-between"><span>Liq Price</span><span class="text-[#EAECEF]">--
-                                USDT</span></div>
-                        <div class="flex justify-between"><span>Cost</span><span class="text-[#EAECEF]">0.00 USDT</span>
+                                USDC</span></div>
+                        <div class="flex justify-between"><span>Cost</span><span class="text-[#EAECEF]">0.00 USDC</span>
                         </div>
-                        <div class="flex justify-between"><span>Cost</span><span class="text-[#EAECEF]">0.00 USDT</span>
+                        <div class="flex justify-between"><span>Cost</span><span class="text-[#EAECEF]">0.00 USDC</span>
                         </div>
                         <div class="flex justify-between"><span>Max</span><span class="text-[#EAECEF]">0.000 BTC</span>
                         </div>
@@ -263,20 +277,20 @@ const handleSellShort = async () => {
                 </div>
                 <div class="flex justify-between">
                     <span class="text-[#848E9C]">Maintenance Margin</span>
-                    <span class="text-white font-mono font-medium">0.00 USDT</span>
+                    <span class="text-white font-mono font-medium">0.00 USDC</span>
                 </div>
                 <div class="flex justify-between">
                     <span class="text-[#848E9C]">Margin Balance</span>
-                    <span class="text-white font-mono font-medium">0.00 USDT</span>
+                    <span class="text-white font-mono font-medium">0.00 USDC</span>
                 </div>
             </div>
             <div class="flex gap-2">
-                <button
+                <button @click="handleTransfer"
                     class="flex-1 bg-[#2B3139] hover:bg-[#323a45] text-white py-1.5 rounded transition-colors uppercase text-[9px] font-bold">Transfer</button>
-                <button
+                <button @click="handleBuyCrypto"
                     class="flex-1 bg-[#2B3139] hover:bg-[#323a45] text-white py-1.5 rounded transition-colors uppercase text-[9px] font-bold">Buy
                     Crypto</button>
-                <button
+                <button @click="handleSwap"
                     class="flex-1 bg-[#2B3139] hover:bg-[#323a45] text-white py-1.5 rounded transition-colors uppercase text-[9px] font-bold">Swap</button>
             </div>
         </div>

@@ -5,7 +5,7 @@ import { createChart, CandlestickSeries, HistogramSeries, LineSeries } from 'lig
 /* =====================
    CONFIG
 ===================== */
-const SYMBOL = 'BTCUSDT'
+const SYMBOL = 'BTCUSDC'
 const INTERVAL_MS = 60_000 // 1m candles
 const MAX_CANDLES = 1000
 

@@ -8,9 +8,28 @@ import CoinMFuturesTrades from '@/components/trading/CoinMFuturesTrades.vue'
 import CoinMFuturesTradeForm from '@/components/trading/CoinMFuturesTradeForm.vue'
 import CoinMFuturesChart from '@/components/trading/CoinMFuturesChart.vue'
 import { useBinanceData } from '@/composables/useBinanceData'
+import { useAuth } from '@/composables/useAuth'
+import { useFutures } from '@/composables/useFutures'
+import { onMounted, onUnmounted } from 'vue'
+
+const { isLoggedIn } = useAuth()
+const { positions, fetchPositions, closePosition } = useFutures()
 
 const activeTab = ref('Chart')
-const { ticker, orderBook, currentPrice } = useBinanceData('BTCUSDT')
+const { ticker, orderBook, currentPrice } = useBinanceData('BTCUSDC')
+
+let positionsInterval = null
+
+onMounted(() => {
+    if (isLoggedIn.value) {
+        fetchPositions()
+        positionsInterval = setInterval(fetchPositions, 5000)
+    }
+})
+
+onUnmounted(() => {
+    if (positionsInterval) clearInterval(positionsInterval)
+})
 </script>
 
 <template>
@@ -197,13 +216,66 @@ const { ticker, orderBook, currentPrice } = useBinanceData('BTCUSDT')
                         <div
                             class="flex items-center gap-6 px-4 border-b border-[#2B3139] h-[40px] text-[12px] text-[#848E9C] flex-none overflow-x-auto no-scrollbar">
                             <span
-                                class="text-[#F0B90B] border-b-2 border-[#F0B90B] h-full flex items-center font-medium whitespace-nowrap">Positions(0)</span>
+                                class="text-[#F0B90B] border-b-2 border-[#F0B90B] h-full flex items-center font-medium whitespace-nowrap">Positions({{
+                                    positions.length }})</span>
                             <span
                                 class="hover:text-white cursor-pointer h-full flex items-center font-medium whitespace-nowrap">Open
                                 Orders(0)</span>
                         </div>
-                        <div class="flex-1 flex flex-col items-center justify-center text-[#848E9C]">
-                            <p class="text-sm">No positions found</p>
+                        <div class="flex-1 overflow-y-auto no-scrollbar">
+                            <template v-if="isLoggedIn">
+                                <table v-if="positions.length > 0" class="w-full text-left text-[11px]">
+                                    <thead
+                                        class="text-[#848E9C] border-b border-[#2B3139] sticky top-0 bg-[#181A20] z-10">
+                                        <tr>
+                                            <th class="py-2 px-4 font-normal">Symbol</th>
+                                            <th class="py-2 px-4 font-normal">Size</th>
+                                            <th class="py-2 px-4 font-normal">Entry Price</th>
+                                            <th class="py-2 px-4 font-normal">Mark Price</th>
+                                            <th class="py-2 px-4 font-normal">Liq. Price</th>
+                                            <th class="py-2 px-4 font-normal text-right">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="pos in positions" :key="pos.id"
+                                            class="border-b border-[#2B3139]/50 hover:bg-[#2B3139]/30 transition-colors">
+                                            <td class="py-3 px-4">
+                                                <div class="flex items-center gap-1">
+                                                    <span class="text-white font-bold">{{ pos.symbol }}</span>
+                                                    <span
+                                                        :class="pos.side === 'BUY' ? 'text-[#0ECB81] bg-[#0ECB81]/10' : 'text-[#F6465D] bg-[#F6465D]/10'"
+                                                        class="px-1 rounded-[2px] text-[9px]">{{ pos.type }} {{
+                                                            pos.leverage }}</span>
+                                                </div>
+                                            </td>
+                                            <td class="px-4 text-[#EAECEF]">{{ pos.size }} Cont</td>
+                                            <td class="px-4 text-[#EAECEF]">{{ pos.entryPrice?.toLocaleString() || '0'
+                                                }}</td>
+                                            <td class="px-4 text-[#EAECEF]">{{ pos.markPrice?.toLocaleString() || '0' }}
+                                            </td>
+                                            <td class="px-4 text-[#F0B90B]">{{ pos.liquidationPrice?.toFixed(1) || '0.0'
+                                                }}</td>
+                                            <td class="px-4 text-right">
+                                                <button @click="closePosition(pos.id)"
+                                                    class="text-[#848E9C] hover:text-white transition-colors underline">Market
+                                                    Close</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div v-else class="h-full flex flex-col items-center justify-center text-[#848E9C]">
+                                    <p class="text-sm">No data to display</p>
+                                </div>
+                            </template>
+                            <div v-else class="h-full flex flex-col items-center justify-center space-y-3">
+                                <p class="text-[#848E9C] text-sm">Please log in to see your positions</p>
+                                <div class="flex gap-4">
+                                    <router-link to="/login" class="text-primary hover:underline font-bold">Log
+                                        In</router-link>
+                                    <router-link to="/register" class="text-primary hover:underline font-bold">Register
+                                        Now</router-link>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

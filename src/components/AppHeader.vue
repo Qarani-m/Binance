@@ -15,7 +15,7 @@ const handleLogout = () => {
 
 const tradeDropdown = {
   basic: [
-    { name: 'Spot', desc: 'Buy and sell on the Spot market with advanced tools', icon: '📊', path: '/trade/BTC_USDT' },
+    { name: 'Spot', desc: 'Buy and sell on the Spot market with advanced tools', icon: '📊', path: '/trade/BTC_USDC' },
     { name: 'Margin', desc: 'Increase your profits with leverage', icon: '📈', path: '/margin' },
 
   ],
@@ -26,9 +26,9 @@ const tradeDropdown = {
 }
 
 const futuresDropdown = [
-  { name: 'USD⊝-M Futures', desc: 'Contracts settled in USDT and USDC', icon: '📄', path: '/futures' },
+  { name: 'USD⊝-M Futures', desc: 'Contracts settled in USDC', icon: '📄', path: '/futures' },
   { name: 'COIN-M Futures', desc: 'Contracts settled in cryptocurrency', icon: '📄', path: '/coin-m' },
-  { name: 'Options', desc: 'USDT Options with limited downside and affordable entry', icon: '📊', path: '/options' }
+  { name: 'Options', desc: 'USDC Options with limited downside and affordable entry', icon: '📊', path: '/options' }
 ]
 
 const earnDropdown = [
@@ -326,7 +326,7 @@ const closeMobileMenu = () => {
         <div class="pt-4 border-t border-[#2b3139] space-y-6">
           <h3 class="text-[#848E9C] text-sm font-bold uppercase tracking-wider">Services</h3>
           <div class="grid grid-cols-1 gap-6">
-            <router-link to="/trade/BTC_USDT" @click="closeMobileMenu" class="text-white font-medium text-[16px]">Spot
+            <router-link to="/trade/BTC_USDC" @click="closeMobileMenu" class="text-white font-medium text-[16px]">Spot
               Trading</router-link>
             <router-link to="/futures" @click="closeMobileMenu"
               class="text-white font-medium text-[16px]">Futures</router-link>

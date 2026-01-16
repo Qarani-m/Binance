@@ -1,9 +1,16 @@
 <script setup>
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuth } from '@/composables/useAuth'
+import { useNotification } from '@/composables/useNotification'
 
 const props = defineProps({
     mode: { type: String, default: 'spot' }
 })
+
+const { isLoggedIn } = useAuth()
+const { showNotification } = useNotification()
+const router = useRouter()
 
 const isAlpha = computed(() => props.mode === 'alpha')
 const tradeType = ref('buy') // buy or sell
@@ -13,6 +20,15 @@ const amount = ref('')
 const total = ref('')
 const availableBalance = ref('--')
 const estimatedFee = ref('--')
+
+const handleTrade = (type) => {
+    if (!isLoggedIn.value) {
+        showNotification('Please log in to trade', 'error')
+        router.push('/login')
+        return
+    }
+    showNotification(`${type} order placed successfully!`, 'success')
+}
 
 const setTradeType = (type) => tradeType.value = type
 const setOrderType = (type) => orderType.value = type
@@ -205,7 +221,8 @@ const setOrderType = (type) => orderType.value = type
                         <span
                             class="text-[#848E9C] text-[12px] font-medium hover:text-white cursor-pointer pb-1">Market</span>
                     </div>
-                    <button class="w-full bg-[#0ECB81] text-black font-bold py-2 rounded text-[14px]">Buy BTC</button>
+                    <button @click="handleTrade('Buy')"
+                        class="w-full bg-[#0ECB81] text-black font-bold py-2 rounded text-[14px]">Buy BTC</button>
                 </div>
                 <div class="flex flex-col gap-3">
                     <div class="flex items-center gap-4 mb-1">
@@ -214,7 +231,8 @@ const setOrderType = (type) => orderType.value = type
                         <span
                             class="text-[#848E9C] text-[12px] font-medium hover:text-white cursor-pointer pb-1">Market</span>
                     </div>
-                    <button class="w-full bg-[#F6465D] text-white font-bold py-2 rounded text-[14px]">Sell BTC</button>
+                    <button @click="handleTrade('Sell')"
+                        class="w-full bg-[#F6465D] text-white font-bold py-2 rounded text-[14px]">Sell BTC</button>
                 </div>
             </div>
         </div>
