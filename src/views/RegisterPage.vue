@@ -120,20 +120,13 @@ const nextStep = async () => {
             <div class="w-full max-w-[440px] flex flex-col items-center">
                 <!-- Logo for mobile -->
                 <router-link to="/" class="lg:hidden mb-8">
-                    <svg class="w-10 h-10 text-primary" viewBox="0 0 24 24" fill="currentColor">
-                        <path
-                            d="M12 0l-4.5 4.5L12 9l4.5-4.5L12 0zM4.5 7.5L0 12l4.5 4.5 4.5-4.5-4.5-4.5zm15 0L15 12l4.5 4.5 4.5-4.5-4.5-4.5zM12 15l-4.5 4.5L12 24l4.5-4.5L12 15z" />
-                    </svg>
+                    <img src="/images/logo.png" alt="Binance" class="h-10 w-auto mx-auto" />
                 </router-link>
 
                 <div class="w-full bg-[#1E2329] rounded-3xl p-8 border border-[#2B3139] shadow-2xl animate-slideRight">
                     <!-- Card Header Logo -->
                     <div class="flex items-center gap-2 mb-8 hidden lg:flex">
-                        <svg class="w-6 h-6 text-primary" viewBox="0 0 24 24" fill="currentColor">
-                            <path
-                                d="M12 0l-4.5 4.5L12 9l4.5-4.5L12 0zM4.5 7.5L0 12l4.5 4.5 4.5-4.5-4.5-4.5zm15 0L15 12l4.5 4.5 4.5-4.5-4.5-4.5zM12 15l-4.5 4.5L12 24l4.5-4.5L12 15z" />
-                        </svg>
-                        <span class="text-[18px] font-bold tracking-tight uppercase">Binance</span>
+                        <img src="/images/logo.png" alt="Binance" class="h-6 w-auto" />
                     </div>
 
                     <!-- STEP 1: REGISTRATION -->

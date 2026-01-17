@@ -4,6 +4,10 @@ import { ref, onMounted } from 'vue'
 const activeTab = ref('popular')
 const userCount = ref(303851303)
 
+// Badge hover states
+const badge1Hovered = ref(false)
+const badge2Hovered = ref(false)
+
 // Simulate live counter
 onMounted(() => {
   setInterval(() => {
@@ -48,44 +52,57 @@ const newsItems = [
           The World's Leading Cryptocurrency Exchange
         </p>
 
-        <!-- Trust Badges -->
-        <div class="flex gap-12 mb-12">
-          <div class="flex items-center gap-3">
-            <div class="text-primary">
-              <!-- Laurel Icon -->
-              <svg width="24" height="40" viewBox="0 0 24 40" fill="currentColor">
-                <path d="M2,20 Q0,10 10,0 M22,20 Q24,10 14,0 M2,20 Q0,30 10,40 M22,20 Q24,30 14,40" fill="none"
-                  stroke="currentColor" stroke-width="2" />
-              </svg>
-            </div>
-            <div>
-              <div class="text-[16px] font-bold text-primary">No.1</div>
-              <div class="text-[12px] text-text-primary">Customer Assets</div>
-            </div>
-            <div class="text-primary transform scale-x-[-1]">
-              <svg width="24" height="40" viewBox="0 0 24 40" fill="currentColor">
-                <path d="M2,20 Q0,10 10,0 M22,20 Q24,10 14,0 M2,20 Q0,30 10,40 M22,20 Q24,30 14,40" fill="none"
-                  stroke="currentColor" stroke-width="2" />
-              </svg>
+        <!-- Trust Badges - Interactive with Hover -->
+        <div class="flex gap-6 mb-12">
+          <!-- Badge 1: Customer Assets -->
+          <div @mouseenter="badge1Hovered = true" @mouseleave="badge1Hovered = false"
+            class="relative cursor-pointer group">
+            <div class="flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-300"
+              :class="badge1Hovered ? 'bg-bg-card ring-2 ring-[#F6465D] shadow-[0_0_20px_rgba(246,70,93,0.3)]' : 'bg-transparent'">
+              <!-- Left Laurel -->
+              <img src="/svg/left.svg" alt="" class="w-5 h-11" />
+
+              <div class="relative min-w-[140px]">
+                <!-- Default State -->
+                <div class="transition-all duration-300" :class="badge1Hovered ? 'opacity-0 absolute' : 'opacity-100'">
+                  <div class="text-[16px] font-bold text-primary">No.1</div>
+                  <div class="text-[12px] text-text-primary whitespace-nowrap">Customer Assets</div>
+                </div>
+                <!-- Hover State -->
+                <div class="transition-all duration-300" :class="badge1Hovered ? 'opacity-100' : 'opacity-0 absolute'">
+                  <div class="text-[11px] text-text-primary whitespace-nowrap">Assets</div>
+                  <div class="text-[14px] font-bold text-primary whitespace-nowrap">$181,752,842,852</div>
+                </div>
+              </div>
+
+              <!-- Right Laurel -->
+              <img src="/svg/left.svg" alt="" class="w-5 h-11 transform scale-x-[-1]" />
             </div>
           </div>
 
-          <div class="flex items-center gap-3">
-            <div class="text-primary">
-              <svg width="24" height="40" viewBox="0 0 24 40" fill="currentColor">
-                <path d="M2,20 Q0,10 10,0 M22,20 Q24,10 14,0 M2,20 Q0,30 10,40 M22,20 Q24,30 14,40" fill="none"
-                  stroke="currentColor" stroke-width="2" />
-              </svg>
-            </div>
-            <div>
-              <div class="text-[16px] font-bold text-primary">No.1</div>
-              <div class="text-[12px] text-text-primary">Trading Volume</div>
-            </div>
-            <div class="text-primary transform scale-x-[-1]">
-              <svg width="24" height="40" viewBox="0 0 24 40" fill="currentColor">
-                <path d="M2,20 Q0,10 10,0 M22,20 Q24,10 14,0 M2,20 Q0,30 10,40 M22,20 Q24,30 14,40" fill="none"
-                  stroke="currentColor" stroke-width="2" />
-              </svg>
+          <!-- Badge 2: Trading Volume -->
+          <div @mouseenter="badge2Hovered = true" @mouseleave="badge2Hovered = false"
+            class="relative cursor-pointer group">
+            <div class="flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-300"
+              :class="badge2Hovered ? 'bg-bg-card ring-2 ring-[#F6465D] shadow-[0_0_20px_rgba(246,70,93,0.3)]' : 'bg-transparent'">
+              <!-- Left Laurel -->
+              <img src="/svg/left.svg" alt="" class="w-5 h-11" />
+
+              <div class="relative min-w-[140px]">
+                <!-- Default State -->
+                <div class="transition-all duration-300" :class="badge2Hovered ? 'opacity-0 absolute' : 'opacity-100'">
+                  <div class="text-[16px] font-bold text-primary">No.1</div>
+                  <div class="text-[12px] text-text-primary whitespace-nowrap">Trading Volume</div>
+                </div>
+                <!-- Hover State -->
+                <div class="transition-all duration-300" :class="badge2Hovered ? 'opacity-100' : 'opacity-0 absolute'">
+                  <div class="text-[11px] text-text-primary whitespace-nowrap">24H</div>
+                  <div class="text-[14px] font-bold text-primary whitespace-nowrap">$49,919,667,461</div>
+                </div>
+              </div>
+
+              <!-- Right Laurel -->
+              <img src="/svg/left.svg" alt="" class="w-5 h-11 transform scale-x-[-1]" />
             </div>
           </div>
         </div>
