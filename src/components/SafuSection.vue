@@ -45,7 +45,7 @@ onMounted(() => {
             <!-- Header Row -->
             <div class="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-16 gap-8">
                 <div>
-                    <h2 class="text-[40px] leading-[48px] font-bold text-text-primary mb-2 font-binance">
+                    <h2 class="text-[56px] leading-[64px] font-bold text-text-primary mb-2 font-binance">
                         FUNDS ARE <span class="text-primary">SAFU</span>
                     </h2>
                     <p class="max-w-[600px] text-text-secondary text-[16px] leading-relaxed">

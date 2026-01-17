@@ -32,15 +32,15 @@ const newsItems = [
 </script>
 
 <template>
-  <div class="pt-[64px] min-h-screen bg-bg-base flex justify-center">
-    <div class="max-w-[1248px] w-full px-6 pt-12 pb-20 grid grid-cols-1 lg:grid-cols-12 gap-12">
+  <div class="pt-[64px] bg-bg-base flex justify-center">
+    <div class="max-w-[1248px] w-full px-6 pt-4 pb-12 grid grid-cols-1 lg:grid-cols-12 gap-8">
 
       <!-- Left Column: Hero Text & CTA -->
-      <div class="lg:col-span-7 flex flex-col justify-center pt-8">
+      <div class="lg:col-span-7 flex flex-col justify-start pt-2">
 
         <!-- User Count - Dynamic Feel -->
         <h1
-          class="text-[64px] leading-[72px] font-bold text-[color:var(--color-primary-bright)] mb-4 font-binance tracking-tight">
+          class="text-[64px] leading-[72px] font-extrabold text-[color:var(--color-primary-bright)] mb-4 font-binance tracking-tight">
           {{ userCount.toLocaleString() }}
           <br />
           <span class="text-text-primary">USERS</span>
@@ -156,7 +156,7 @@ const newsItems = [
       </div>
 
       <!-- Right Column: Markets & News -->
-      <div class="lg:col-span-5 flex flex-col gap-6 pt-12">
+      <div class="lg:col-span-5 flex flex-col gap-6 pt-2">
 
         <!-- Markets Card -->
         <div class="bg-bg-card rounded-[16px] p-4">

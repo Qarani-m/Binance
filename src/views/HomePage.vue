@@ -1,6 +1,7 @@
 <script setup>
 import AppHeader from '@/components/AppHeader.vue'
 import HeroSection from '@/components/HeroSection.vue'
+import AwardsSection from '@/components/AwardsSection.vue'
 import SafuSection from '@/components/SafuSection.vue'
 import AppDownloadSection from '@/components/AppDownloadSection.vue'
 import FaqSection from '@/components/FaqSection.vue'
@@ -14,6 +15,7 @@ import AppFooter from '@/components/AppFooter.vue'
 
         <main>
             <HeroSection />
+            <AwardsSection />
             <SafuSection />
             <AppDownloadSection />
             <FaqSection />
