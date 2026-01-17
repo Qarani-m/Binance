@@ -108,22 +108,23 @@ const newsItems = [
         </div>
 
         <!-- Sign Up Row -->
-        <div class="flex gap-4 max-w-[580px] mb-12">
-          <div class="flex-1 relative">
+        <!-- Sign Up Row -->
+        <div class="flex flex-col sm:flex-row gap-4 max-w-[580px] mb-12">
+          <div class="flex-1 relative w-full">
             <input type="text" placeholder="Email/Phone number"
               class="w-full h-[48px] bg-bg-base border border-bg-card-hover rounded-[8px] pl-4 text-text-primary focus:border-primary focus:outline-none placeholder-text-disabled hover:border-text-secondary transition-colors" />
             <div
-              class="absolute right-0 top-0 bottom-0 px-4 flex items-center bg-gradient-to-l from-bg-base to-transparent">
-              <span class="text-primary text-xs flex items-center gap-1">
+              class="hidden sm:flex absolute right-0 top-0 bottom-0 px-4 items-center bg-gradient-to-l from-bg-base to-transparent pointer-events-none">
+              <span class="text-primary text-xs flex items-center gap-1 whitespace-nowrap">
                 <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M10 2a8 8 0 100 16 8 8 0 000-16zM9 13h2v2H9v-2zm0-8h2v6H9V5z" />
                 </svg>
-                Up to $100 Bonus Only Today
+                Up to $100 Bonus
               </span>
             </div>
           </div>
           <router-link to="/register"
-            class="h-[48px] px-8 bg-primary hover:bg-primary-hover text-black font-bold rounded-[8px] transition-colors whitespace-nowrap flex items-center justify-center">
+            class="h-[48px] px-8 bg-primary hover:bg-primary-hover text-black font-bold rounded-[8px] transition-colors whitespace-nowrap flex items-center justify-center w-full sm:w-auto">
             Sign Up
           </router-link>
         </div>

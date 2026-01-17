@@ -3,7 +3,7 @@
 
 <template>
     <section class="py-24">
-        <div class="max-w-[1000px] mx-auto px-6">
+        <div class="max-w-[1248px] mx-auto px-6">
             <div class="flex flex-col md:flex-row items-center gap-16 lg:gap-24">
 
                 <!-- Phone Mockup Left -->

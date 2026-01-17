@@ -3,7 +3,7 @@
 
 <template>
   <footer class="bg-[#0B0E11] text-white pt-12 pb-6">
-    <div class="max-w-[1400px] mx-auto px-6">
+    <div class="max-w-[1248px] mx-auto px-6">
       <!-- Main Footer Grid -->
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 mb-12">
         <!-- Community Column -->

@@ -75,7 +75,7 @@ const toggle = (index) => {
                     <div class="grid transition-all duration-300 ease-in-out"
                         :class="openIndex === index ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'">
                         <div class="overflow-hidden">
-                            <div class="px-6 pb-8 pl-20 pr-12 text-text-secondary text-[14px] leading-relaxed">
+                            <div class="px-6 pb-8 md:pl-[72px] md:pr-6 text-text-secondary text-[14px] leading-relaxed">
                                 <div v-html="faq.answer"></div>
                             </div>
                         </div>
