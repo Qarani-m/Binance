@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import AppHeader from '@/components/AppHeader.vue'
 import AppFooter from '@/components/AppFooter.vue'
+import { getCoinIcon } from '@/utils/coinIcons'
 
 const route = useRoute()
 const ticker = ref(route.params.ticker || 'ETH')
@@ -51,8 +52,10 @@ onMounted(() => {
                         <div class="flex items-start justify-between">
                             <div class="flex items-center gap-4">
                                 <div
-                                    class="w-12 h-12 rounded-full bg-[#1e2329] flex items-center justify-center font-bold text-[20px]">
-                                    {{ ticker[0] }}
+                                    class="w-12 h-12 rounded-full bg-[#1e2329] flex items-center justify-center overflow-hidden">
+                                    <img v-if="getCoinIcon(ticker)" :src="getCoinIcon(ticker)" :alt="ticker"
+                                        class="w-full h-full object-cover" />
+                                    <span v-else class="font-bold text-[20px]">{{ ticker[0] }}</span>
                                 </div>
                                 <div>
                                     <h1 class="text-[32px] font-bold leading-tight">{{ name }} Price ({{ ticker }})</h1>
@@ -217,8 +220,12 @@ onMounted(() => {
                                         <div
                                             class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 bg-[#1e2329] px-3 py-1.5 rounded-xl border border-[#2b3139]">
                                             <div
-                                                class="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-[10px] font-black text-black">
-                                                {{ ticker[0] }}</div>
+                                                class="w-6 h-6 rounded-full bg-[#1e2329] flex items-center justify-center overflow-hidden">
+                                                <img v-if="getCoinIcon(ticker)" :src="getCoinIcon(ticker)" :alt="ticker"
+                                                    class="w-full h-full object-cover" />
+                                                <span v-else class="text-[10px] font-black text-white">{{ ticker[0]
+                                                    }}</span>
+                                            </div>
                                             <span class="font-bold">{{ ticker }}</span>
                                         </div>
                                     </div>
@@ -264,14 +271,16 @@ onMounted(() => {
                                         </div>
                                         <div class="space-y-1">
                                             <div class="flex justify-between text-[11px] text-text-secondary">
-                                                <span>Kraken</span><span>0.26%</span></div>
+                                                <span>Kraken</span><span>0.26%</span>
+                                            </div>
                                             <div class="h-1.5 w-full bg-[#2b3139] rounded-full overflow-hidden">
                                                 <div class="h-full bg-[#F6465D] w-[35%] opacity-50"></div>
                                             </div>
                                         </div>
                                         <div class="space-y-1">
                                             <div class="flex justify-between text-[11px] text-text-secondary">
-                                                <span>Coinbase</span><span>1.99%</span></div>
+                                                <span>Coinbase</span><span>1.99%</span>
+                                            </div>
                                             <div class="h-1.5 w-full bg-[#2b3139] rounded-full overflow-hidden">
                                                 <div class="h-full bg-[#F6465D] w-full opacity-50"></div>
                                             </div>

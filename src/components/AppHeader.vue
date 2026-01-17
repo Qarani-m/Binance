@@ -79,9 +79,7 @@ const closeMobileMenu = () => {
     <div class="flex items-center gap-2 md:gap-6 h-full">
       <!-- Logo -->
       <router-link to="/" class="flex items-center gap-2 group shrink-0">
-        <svg class="text-primary w-[100px] md:w-[120px]" viewBox="0 0 1000 200" fill="currentColor">
-          <text x="0" y="140" font-family="Arial" font-weight="bold" font-size="120" fill="#FCD535">BINANCE</text>
-        </svg>
+        <img src="/images/logo.png" alt="Binance" class="h-8 md:h-10 w-auto" />
       </router-link>
 
       <!-- Desktop Nav -->

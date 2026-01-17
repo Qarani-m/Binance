@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue'
+import { getCoinIcon } from '@/utils/coinIcons'
 
 const props = defineProps({
     pair: { type: String, default: 'BTC/USDT' },
@@ -27,6 +28,9 @@ const alphaStats = {
     holders: '71,953',
     liq: '1.47M'
 }
+
+const baseCoin = computed(() => props.pair.split('/')[0])
+const baseIcon = computed(() => getCoinIcon(baseCoin.value))
 </script>
 
 <template>
@@ -63,7 +67,7 @@ const alphaStats = {
 
             <div class="flex flex-col items-center">
                 <span class="text-white text-xl font-bold font-mono leading-none">${{ currentPriceAlpha.toFixed(5)
-                    }}</span>
+                }}</span>
                 <span class="text-[#F6465D] text-[11px] font-mono mt-1">{{ priceChangePercentAlpha.toFixed(2) }}%</span>
             </div>
         </div>
@@ -71,9 +75,10 @@ const alphaStats = {
         <!-- BTC Layout for Spot -->
         <div v-else class="flex items-center gap-4">
             <div class="flex items-center gap-2 pr-4 border-r border-[#2B3139]">
-                <div
-                    class="w-6 h-6 rounded-full bg-[#F0B90B] flex items-center justify-center text-black font-bold text-sm">
-                    ₿</div>
+                <div class="w-6 h-6 rounded-full bg-[#2B3139] flex items-center justify-center overflow-hidden">
+                    <img v-if="baseIcon" :src="baseIcon" :alt="baseCoin" class="w-full h-full object-cover" />
+                    <span v-else class="text-white font-bold text-xs">{{ baseCoin.substring(0, 2) }}</span>
+                </div>
                 <div class="flex flex-col">
                     <div class="flex items-center gap-1 group cursor-pointer">
                         <span class="text-white font-bold text-lg leading-tight">{{ props.pair }}</span>

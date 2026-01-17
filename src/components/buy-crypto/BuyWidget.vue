@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
+import { getCoinIcon } from '@/utils/coinIcons'
 
 const router = useRouter()
 const { user, fetchProfile } = useAuth()
@@ -201,8 +202,9 @@ onMounted(() => {
                             <div
                                 class="flex items-center gap-2 bg-[#1e2329] px-3 py-1.5 rounded-lg border border-[#2b3139] cursor-pointer hover:border-primary">
                                 <div
-                                    class="w-5 h-5 rounded-full bg-[#2775CA] flex items-center justify-center text-[10px] font-black text-white">
-                                    $</div>
+                                    class="w-5 h-5 rounded-full bg-[#1e2329] flex items-center justify-center overflow-hidden">
+                                    <img :src="getCoinIcon('USDC')" alt="USDC" class="w-full h-full object-cover" />
+                                </div>
                                 <span class="text-white font-bold">USDC</span>
                                 <svg class="w-4 h-4 text-text-secondary" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
@@ -258,8 +260,9 @@ onMounted(() => {
                                 <div
                                     class="flex items-center gap-2 bg-[#1e2329] px-3 py-1.5 rounded-lg border border-[#2b3139] cursor-pointer hover:border-primary">
                                     <div
-                                        class="w-5 h-5 rounded-full bg-[#2775CA] flex items-center justify-center text-[10px] font-black text-white">
-                                        $</div>
+                                        class="w-5 h-5 rounded-full bg-[#1e2329] flex items-center justify-center overflow-hidden">
+                                        <img :src="getCoinIcon('USDC')" alt="USDC" class="w-full h-full object-cover" />
+                                    </div>
                                     <span class="text-white font-bold">USDC</span>
                                     <svg class="w-4 h-4 text-text-secondary" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
@@ -275,7 +278,7 @@ onMounted(() => {
                             <div
                                 class="flex items-center justify-between bg-[#0b0e11] border border-[#2b3139] rounded-xl px-4 py-4 focus-within:border-primary transition-colors opacity-80">
                                 <span class="text-white text-[24px] font-bold leading-none">{{ receiveSellAmount
-                                    }}</span>
+                                }}</span>
                                 <div
                                     class="flex items-center gap-2 bg-[#1e2329] px-3 py-1.5 rounded-lg border border-[#2b3139] cursor-pointer hover:border-primary">
                                     <div

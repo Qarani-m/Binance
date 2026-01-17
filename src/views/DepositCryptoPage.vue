@@ -1,9 +1,9 @@
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
 import api from '@/services/api'
 import { useAuth } from '@/composables/useAuth'
 import AppHeader from '@/components/AppHeader.vue'
 import AppFooter from '@/components/AppFooter.vue'
+import { getCoinIcon } from '@/utils/coinIcons'
 
 const { user, fetchProfile } = useAuth()
 const currentStep = ref(1)
@@ -14,11 +14,49 @@ const depositAddress = ref('')
 const isLoadingAddress = ref(false)
 
 const coins = [
-    { name: 'Bitcoin', symbol: 'BTC', icon: '₿', color: '#F7931A' },
-    // { name: 'Ethereum', symbol: 'ETH', icon: 'Ξ', color: '#627EEA' },
-    // { name: 'Tether', symbol: 'USDT', icon: '₮', color: '#26A17B' },
-    // { name: 'Binance Coin', symbol: 'BNB', icon: 'B', color: '#F3BA2F' },
-]
+    { name: 'Bitcoin', symbol: 'BTC', color: '#F7931A' },
+    { name: 'Ethereum', symbol: 'ETH', color: '#627EEA' },
+    { name: 'Tether', symbol: 'USDT', color: '#26A17B' },
+    { name: 'BNB', symbol: 'BNB', color: '#F3BA2F' },
+    { name: 'XRP', symbol: 'XRP', color: '#23292F' },
+    { name: 'Solana', symbol: 'SOL', color: '#14F195' },
+    { name: 'USDC', symbol: 'USDC', color: '#2775CA' },
+    { name: 'Cardano', symbol: 'ADA', color: '#0033AD' },
+    { name: 'Avalanche', symbol: 'AVAX', color: '#E84142' },
+    { name: 'Dogecoin', symbol: 'DOGE', color: '#C2A633' },
+    { name: 'TRON', symbol: 'TRX', color: '#FF0013' },
+    { name: 'Polkadot', symbol: 'DOT', color: '#E6007A' },
+    { name: 'Chainlink', symbol: 'LINK', color: '#2A5ADA' },
+    { name: 'Bitcoin Cash', symbol: 'BCH', color: '#8BC34A' },
+    { name: 'Stellar', symbol: 'XLM', color: '#000000' },
+    { name: 'Aave', symbol: 'AAVE', color: '#B6509E' },
+    { name: 'Aptos', symbol: 'APT', color: '#000000' },
+    { name: 'Axie Infinity', symbol: 'AXS', color: '#0055D5' },
+    { name: 'Dai', symbol: 'DAI', color: '#F5AC37' },
+    { name: 'Dusk Network', symbol: 'DUSK', color: '#2B2E33' },
+    { name: 'Filecoin', symbol: 'FIL', color: '#0090FF' },
+    { name: 'Internet Computer', symbol: 'ICP', color: '#292A2E' },
+    { name: 'Meteora', symbol: 'MET', color: '#23212F' },
+    { name: 'Pepe', symbol: 'PEPE', color: '#449E2D' },
+    { name: 'Shiba Inu', symbol: 'SHIB', color: '#FFA408' },
+    { name: 'Sui', symbol: 'SUI', color: '#6FB1E4' },
+    { name: 'Toncoin', symbol: 'TON', color: '#0088CC' },
+    { name: 'Uniswap', symbol: 'UNI', color: '#FF007A' },
+    { name: 'Zcash', symbol: 'ZEC', color: '#F4B728' },
+    { name: 'zkPass', symbol: 'ZKP', color: '#000000' },
+    { name: 'Astar', symbol: 'ASTR', color: '#E6007A' },
+    { name: 'FOGO', symbol: 'FOGO', color: '#E6007A' },
+    { name: 'Hedera', symbol: 'HBAR', color: '#000000' },
+    { name: 'SKY', symbol: 'SKY', color: '#000000' },
+    { name: 'Trump', symbol: 'TRUMP', color: '#000000' },
+    { name: 'U', symbol: 'U', color: '#000000' },
+    { name: 'World Liberty Fin USD', symbol: 'USD1', color: '#000000' },
+    { name: 'Ethena USDe', symbol: 'USDE', color: '#000000' },
+    { name: 'Wrapped Beacon ETH', symbol: 'WBETH', color: '#000000' },
+    { name: 'Wrapped Bitcoin', symbol: 'WBTC', color: '#F7931A' },
+    { name: 'Worldcoin', symbol: 'WLD', color: '#000000' },
+    { name: 'World Liberty Financial', symbol: 'WLFI', color: '#000000' },
+].filter(c => getCoinIcon(c.symbol))
 
 const filteredCoins = computed(() => {
     if (!searchQuery.value) return coins
@@ -154,11 +192,11 @@ onMounted(() => {
                                 class="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 gap-2 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
                                 <button v-for="coin in filteredCoins" :key="coin.symbol" @click="selectCoin(coin)"
                                     class="flex flex-col items-center gap-2 p-3 sm:p-4 rounded-xl hover:bg-[#1e2329] border border-transparent hover:border-[#2b3139] transition-all text-center">
-                                    <span
-                                        class="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-base sm:text-lg font-bold shadow-lg"
-                                        :style="{ backgroundColor: coin.color + '20', color: coin.color }">
-                                        {{ coin.icon }}
-                                    </span>
+                                    <div
+                                        class="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center overflow-hidden bg-[#2B3139]">
+                                        <img :src="getCoinIcon(coin.symbol)" :alt="coin.symbol"
+                                            class="w-full h-full object-cover" />
+                                    </div>
                                     <div>
                                         <div class="text-[12px] sm:text-sm font-bold text-white">{{ coin.symbol }}</div>
                                         <div class="text-[10px] text-[#848E9C]">{{ coin.name }}</div>
@@ -169,10 +207,11 @@ onMounted(() => {
 
                         <div v-else-if="selectedCoin" @click="reset"
                             class="flex items-center gap-3 p-3 bg-[#1E2329] rounded-lg border border-[#2B3139] cursor-pointer hover:border-primary/50 transition-all w-fit pr-8 relative group">
-                            <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
-                                :style="{ backgroundColor: selectedCoin.color + '20', color: selectedCoin.color }">
-                                {{ selectedCoin.icon }}
-                            </span>
+                            <div
+                                class="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden bg-[#2B3139]">
+                                <img :src="getCoinIcon(selectedCoin.symbol)" :alt="selectedCoin.symbol"
+                                    class="w-full h-full object-cover" />
+                            </div>
                             <div>
                                 <div class="text-sm font-bold text-white">{{ selectedCoin.symbol }}</div>
                                 <div class="text-[10px] text-[#848E9C]">{{ selectedCoin.name }}</div>

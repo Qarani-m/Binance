@@ -68,13 +68,7 @@ const finishLogin = () => {
         <main class="flex-1 flex flex-col items-center justify-center px-4 py-8 sm:py-12">
             <!-- Logo -->
             <router-link to="/" class="mb-10 block">
-                <div class="flex items-center gap-2">
-                    <svg class="w-8 h-8 text-primary" viewBox="0 0 24 24" fill="currentColor">
-                        <path
-                            d="M12 0l-4.5 4.5L12 9l4.5-4.5L12 0zM4.5 7.5L0 12l4.5 4.5 4.5-4.5-4.5-4.5zm15 0L15 12l4.5 4.5 4.5-4.5-4.5-4.5zM12 15l-4.5 4.5L12 24l4.5-4.5L12 15z" />
-                    </svg>
-                    <span class="text-[24px] font-bold tracking-tight uppercase text-white">Binance</span>
-                </div>
+                <img src="/images/logo.png" alt="Binance" class="h-12 w-auto mx-auto" />
             </router-link>
 
             <!-- Login Cards based on Steps -->

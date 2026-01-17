@@ -7,40 +7,9 @@
             <div class="flex flex-col md:flex-row items-center gap-16 lg:gap-24">
 
                 <!-- Phone Mockup Left -->
-                <div
-                    class="relative w-[300px] h-[600px] bg-bg-card rounded-[40px] border-[8px] border-gray-800 shadow-2xl flex-shrink-0">
-                    <!-- Screen Content (Simulated) -->
-                    <div class="absolute inset-0 bg-bg-base rounded-[32px] overflow-hidden p-4 flex flex-col">
-                        <!-- App Header -->
-                        <div class="flex justify-between items-center mb-6">
-                            <div class="w-8 h-8 rounded-full bg-primary/20"></div>
-                            <div class="flex gap-2">
-                                <div class="w-5 h-5 rounded bg-bg-card"></div>
-                                <div class="w-5 h-5 rounded bg-bg-card"></div>
-                            </div>
-                        </div>
-                        <!-- Balance -->
-                        <div class="mb-8">
-                            <div class="text-text-secondary text-xs mb-1">Total Value</div>
-                            <div class="text-text-primary text-2xl font-bold font-mono">$7,115.28</div>
-                        </div>
-                        <!-- Mock List -->
-                        <div class="space-y-3">
-                            <div v-for="i in 5" :key="i"
-                                class="flex justify-between items-center p-3 bg-bg-card/50 rounded-lg">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-8 h-8 rounded-full bg-white/5"></div>
-                                    <div class="w-16 h-3 bg-white/10 rounded"></div>
-                                </div>
-                                <div class="w-12 h-3 bg-white/10 rounded"></div>
-                            </div>
-                        </div>
-                        <!-- Bottom Nav -->
-                        <div class="mt-auto flex justify-between px-4 pt-4 border-t border-white/5">
-                            <div class="w-6 h-6 rounded bg-primary/50"></div>
-                            <div v-for="i in 3" :key="i" class="w-6 h-6 rounded bg-white/10"></div>
-                        </div>
-                    </div>
+                <div class="relative w-[280px] lg:w-[320px] flex-shrink-0 animate-float">
+                    <img src="/images/homepage-binance-mobile-view.png" alt="Binance Mobile App"
+                        class="w-full h-auto drop-shadow-[0_20px_50px_rgba(240,185,11,0.15)] rounded-[40px]" />
                 </div>
 
                 <!-- Content Right -->
@@ -51,17 +20,10 @@
 
                     <div class="flex items-start gap-8">
                         <!-- QR Code -->
-                        <div class="p-2 border border-bg-card rounded-xl bg-white w-fit">
-                            <div class="w-[120px] h-[120px] bg-black">
-                                <!-- Simple CSS QR Pattern -->
-                                <div class="w-full h-full p-2 grid grid-cols-4 grid-rows-4 gap-1">
-                                    <div class="bg-white col-span-2 row-span-2 border-4 border-black"></div>
-                                    <div class="bg-white col-span-2 row-span-2 col-start-3 border-4 border-black"></div>
-                                    <div class="bg-white col-span-2 row-span-2 row-start-3 border-4 border-black"></div>
-                                    <div class="bg-white col-start-3 row-start-3"></div>
-                                    <div class="bg-white col-start-4 row-start-4"></div>
-                                </div>
-                            </div>
+                        <div
+                            class="p-3 bg-white rounded-2xl shadow-xl hover:scale-105 transition-transform duration-300">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://google.com"
+                                alt="Download app QR" class="w-[120px] h-[120px]" />
                         </div>
 
                         <div class="pt-2">
@@ -113,3 +75,23 @@
         </div>
     </section>
 </template>
+
+<style scoped>
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+.animate-float {
+    animation: float 6s ease-in-out infinite;
+}
+</style>

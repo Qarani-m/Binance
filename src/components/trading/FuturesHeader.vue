@@ -1,4 +1,7 @@
 <script setup>
+import { computed } from 'vue'
+import { getCoinIcon } from '@/utils/coinIcons'
+
 const props = defineProps({
     pair: { type: String, default: 'BTCUSDC' },
     ticker: {
@@ -16,6 +19,13 @@ const props = defineProps({
         })
     }
 })
+
+const baseCoin = computed(() => {
+    if (props.pair.includes('USDC')) return props.pair.replace('USDC', '')
+    if (props.pair.includes('USDT')) return props.pair.replace('USDT', '')
+    return props.pair.substring(0, 3)
+})
+const baseIcon = computed(() => getCoinIcon(baseCoin.value))
 </script>
 
 <template>
@@ -28,9 +38,10 @@ const props = defineProps({
                 <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
             </svg>
             <div class="flex items-center gap-2">
-                <div
-                    class="w-8 h-8 rounded-full bg-[#F3BA2F] flex items-center justify-center text-black font-bold text-sm leading-none">
-                    ₿</div>
+                <div class="w-8 h-8 rounded-full bg-[#1e2329] flex items-center justify-center overflow-hidden">
+                    <img v-if="baseIcon" :src="baseIcon" :alt="baseCoin" class="w-full h-full object-cover" />
+                    <span v-else class="text-white font-bold text-sm leading-none">{{ baseCoin.substring(0, 2) }}</span>
+                </div>
                 <div class="flex flex-col">
                     <div class="flex items-center gap-1.5 leading-none">
                         <span class="text-[20px] font-bold text-white">{{ pair }}</span>

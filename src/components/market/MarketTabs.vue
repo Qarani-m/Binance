@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { getCoinIcon } from '@/utils/coinIcons'
 
 // Top-level tabs state
 const activeTopTab = ref('Overview')
@@ -21,23 +22,23 @@ const categories = ref([
             { ticker: 'BNB', name: 'BNB', price: 909.49, change: '+1.43%', positive: true, icon: 'BNB' },
             { ticker: 'BTC', name: 'BTC', price: 90700, change: '-0.50%', positive: false, icon: 'BTC' },
             { ticker: 'ETH', name: 'ETH', price: 3090, change: '-0.47%', positive: false, icon: 'ETH' }
-        ]
+        ].filter(item => getCoinIcon(item.ticker))
     },
     {
         title: 'New',
         items: [
             { ticker: 'ZKP', name: 'ZKP', price: 0.1546, change: '-6.53%', positive: false, icon: 'ZKP' },
-            { ticker: 'ID', name: 'ID', price: 0.0869, change: '+23.09%', positive: true, icon: 'ID' },
-            { ticker: 'BREV', name: 'BREV', price: 0.3757, change: '-2.89%', positive: false, icon: 'BREV' }
-        ]
+            { ticker: 'MET', name: 'MET', price: 0.2673, change: '+4.01%', positive: true, icon: 'MET' },
+            { ticker: 'WLD', name: 'WLD', price: 0.5804, change: '-0.21%', positive: false, icon: 'WLD' }
+        ].filter(item => getCoinIcon(item.ticker))
     },
     {
         title: 'Top Gainer',
         items: [
-            { ticker: 'ID', name: 'ID', price: 0.0869, change: '+23.09%', positive: true, icon: 'ID' },
-            { ticker: 'FORM', name: 'FORM', price: 0.4157, change: '+11.54%', positive: true, icon: 'FORM' },
-            { ticker: 'GMT', name: 'GMT', price: 0.02285, change: '+18.70%', positive: true, icon: 'GMT' }
-        ]
+            { ticker: 'USDE', name: 'USDE', price: 1.00, change: '+0.01%', positive: true, icon: 'USDE' },
+            { ticker: 'WLFI', name: 'WLFI', price: 0.1702, change: '+0.59%', positive: true, icon: 'WLFI' },
+            { ticker: 'SUI', name: 'SUI', price: 1.82, change: '+0.74%', positive: true, icon: 'SUI' }
+        ].filter(item => getCoinIcon(item.ticker))
     },
     {
         title: 'Top Volume',
@@ -45,7 +46,7 @@ const categories = ref([
             { ticker: 'BTC', name: 'BTC', price: 90700, change: '-0.50%', positive: false, icon: 'BTC' },
             { ticker: 'ETH', name: 'ETH', price: 3090, change: '-0.47%', positive: false, icon: 'ETH' },
             { ticker: 'SOL', name: 'SOL', price: 136.51, change: '-0.94%', positive: false, icon: 'SOL' }
-        ]
+        ].filter(item => getCoinIcon(item.ticker))
     }
 ])
 
@@ -82,13 +83,12 @@ const marketList = ref([
     { name: 'Cardano', ticker: 'ADA', price: 0.3938, change: 1.18, vol: '$264.50M', cap: '$14.18B', icon: 'ADA', tags: ['Layer 1 / Layer 2'] },
     { name: 'Bitcoin Cash', ticker: 'BCH', price: 655.80, change: 2.61, vol: '$611.61M', cap: '$13.10B', icon: 'BCH', tags: ['Payments'] },
     { name: 'Stellar Lumens', ticker: 'XLM', price: 0.228, change: 0.26, vol: '$74.89M', cap: '$11.40B', icon: 'XLM', tags: ['Payments'] },
-    { name: 'Wrapped Beacon ETH', ticker: 'WBETH', price: 3388.90, change: 0.75, vol: '$1.00M', cap: '$11.39B', icon: 'ETH', tags: ['BNB Chain'] },
-    { name: 'Wrapped Bitcoin', ticker: 'WBTC', price: 90835.18, change: 0.51, vol: '$39.58M', cap: '$11.37B', icon: 'BTC', tags: ['Layer 1 / Layer 2'] },
+    { name: 'Wrapped Beacon ETH', ticker: 'WBETH', price: 3388.90, change: 0.75, vol: '$1.00M', cap: '$11.39B', icon: 'WBETH', tags: ['BNB Chain'] },
+    { name: 'Wrapped Bitcoin', ticker: 'WBTC', price: 90835.18, change: 0.51, vol: '$39.58M', cap: '$11.37B', icon: 'WBTC', tags: ['Layer 1 / Layer 2'] },
     { name: 'ChainLink', ticker: 'LINK', price: 13.23, change: 0.53, vol: '$183.43M', cap: '$9.38B', icon: 'LINK', tags: ['RWA'] },
     { name: 'Sui', ticker: 'SUI', price: 1.82, change: 0.74, vol: '$353.53M', cap: '$6.92B', icon: 'SUI', tags: ['Layer 1 / Layer 2'] },
     { name: 'Zcash', ticker: 'ZEC', price: 391.26, change: 2.63, vol: '$505.26M', cap: '$6.43B', icon: 'ZEC', tags: ['Payments'] },
-    { name: 'Ethena USDe', ticker: 'USDe', price: 1.00, change: 0.01, vol: '$32.06M', cap: '$6.35B', icon: 'USDe', tags: ['Payments'] },
-    { name: 'Litecoin', ticker: 'LTC', price: 80.94, change: -1.22, vol: '$256.49M', cap: '$6.21B', icon: 'LTC', tags: ['Payments'] },
+    { name: 'Ethena USDe', ticker: 'USDe', price: 1.00, change: 0.01, vol: '$32.06M', cap: '$6.35B', icon: 'USDE', tags: ['Payments'] },
     { name: 'Avalanche', ticker: 'AVAX', price: 13.87, change: 0.22, vol: '$128.55M', cap: '$5.97B', icon: 'AVAX', tags: ['Layer 1 / Layer 2'] },
     { name: 'Hedera Hashgraph', ticker: 'HBAR', price: 0.11825, change: -1.22, vol: '$74.01M', cap: '$5.92B', icon: 'HBAR', tags: ['Layer 1 / Layer 2'] },
     { name: 'Dai', ticker: 'DAI', price: 1.00, change: 0.38, vol: '$78.06M', cap: '$5.36B', icon: 'DAI', tags: ['Payments'] },
@@ -98,9 +98,22 @@ const marketList = ref([
     { name: 'Toncoin', ticker: 'TON', price: 1.76, change: -1.07, vol: '$79.02M', cap: '$4.25B', icon: 'TON', tags: ['Layer 1 / Layer 2'] },
     { name: 'Polkadot', ticker: 'DOT', price: 2.10, change: -0.52, vol: '$62.89M', cap: '$3.48B', icon: 'DOT', tags: ['Layer 1 / Layer 2'] },
     { name: 'World Liberty Fin USD', ticker: 'USD1', price: 1.00, change: 0.03, vol: '$558.98M', cap: '$3.40B', icon: 'USD1', tags: ['Payments'] },
-    { name: 'Bittensor', ticker: 'TAO', price: 287.40, change: 0.98, vol: '$77.89M', cap: '$3.17B', icon: 'TAO', tags: ['AI'] },
-    { name: 'Worldcoin', ticker: 'WLD', price: 0.5804, change: -0.21, vol: '$48.72M', cap: '$2.59B', icon: 'WLD', tags: ['AI'] }
-])
+    { name: 'Worldcoin', ticker: 'WLD', price: 0.5804, change: -0.21, vol: '$48.72M', cap: '$2.59B', icon: 'WLD', tags: ['AI'] },
+    { name: 'Aave', ticker: 'AAVE', price: 182.40, change: 1.22, vol: '$224.53M', cap: '$2.72B', icon: 'AAVE', tags: ['DeFi'] },
+    { name: 'Aptos', ticker: 'APT', price: 12.35, change: 0.45, vol: '$112.43M', cap: '$5.34B', icon: 'APT', tags: ['Layer 1 / Layer 2'] },
+    { name: 'Axie Infinity', ticker: 'AXS', price: 10.12, change: 2.31, vol: '$45.62M', cap: '$1.45B', icon: 'AXS', tags: ['Gaming'] },
+    { name: 'Dusk Network', ticker: 'DUSK', price: 0.45, change: -1.22, vol: '$12.43M', cap: '$192.53M', icon: 'DUSK', tags: ['Layer 1 / Layer 2'] },
+    { name: 'Filecoin', ticker: 'FIL', price: 6.82, change: 0.74, vol: '$53.53M', cap: '$3.92B', icon: 'FIL', tags: ['Storage'] },
+    { name: 'Internet Computer', ticker: 'ICP', price: 15.26, change: 2.63, vol: '$55.26M', cap: '$6.43B', icon: 'ICP', tags: ['Layer 1 / Layer 2'] },
+    { name: 'Meteora', ticker: 'MET', price: 0.2673, change: 4.01, vol: '$15.99M', cap: '$131.55M', icon: 'MET', tags: ['DeFi'] },
+    { name: 'Pepe', ticker: 'PEPE', price: 0.00001865, change: 5.42, vol: '$463.80M', cap: '$7.84B', icon: 'PEPE', tags: ['Meme'] },
+    { name: 'TRUMP', ticker: 'TRUMP', price: 12.45, change: 15.22, vol: '$224.53M', cap: '$1.12B', icon: 'TRUMP', tags: ['Meme'] },
+    { name: 'U', ticker: 'U', price: 0.12, change: 0.51, vol: '$1.26M', cap: '$1.81M', icon: 'U', tags: ['Meme'] },
+    { name: 'zkPass', ticker: 'ZKP', price: 0.1436, change: -6.08, vol: '$31.08M', cap: '$28.96M', icon: 'ZKP', tags: ['Seed'] },
+    { name: 'Astar', ticker: 'ASTR', price: 0.091, change: 1.55, vol: '$12.43M', cap: '$512.53M', icon: 'ASTR', tags: ['Polkadot'] },
+    { name: 'FOGO', ticker: 'FOGO', price: 0.012, change: 2.31, vol: '$1.12M', cap: '$1.45M', icon: 'FOGO', tags: ['Meme'] },
+    { name: 'Sky', ticker: 'SKY', price: 1.12, change: 0.22, vol: '$12.43M', cap: '$192.53M', icon: 'SKY', tags: ['Layer 1 / Layer 2'] }
+].filter(coin => getCoinIcon(coin.icon)))
 
 const filteredMarketList = computed(() => {
     let list = marketList.value
@@ -157,17 +170,12 @@ const activeAlphaFilter = ref('All')
 const alphaFilters = ['All', 'Points+', 'BSC', 'Ethereum', 'Solana', 'Base', 'Arbitrum', 'Sonic', 'Sui', 'TRON']
 
 const alphaTokens = ref([
-    { name: 'DN', ticker: 'DN', price: 1.39881, change: 15.93, vol: '$47.95M', cap: '$31.53M', icon: 'DN', tags: ['Base'] },
-    { name: 'BLESS', ticker: 'BLESS', price: 0.012511, change: -1.13, vol: '$1.26M', cap: '$23.04M', icon: 'BLESS', tags: ['Ethereum'] },
-    { name: 'MEME', ticker: 'MEMA', price: 0.027412, change: -31.30, vol: '$91.54M', cap: '$28.04M', icon: 'MEMA', tags: ['Solana', 'Meme'] },
-    { name: 'ZTC', ticker: 'ZTC', price: 0.0027103, change: 1.38, vol: '$14.64M', cap: '$15.09M', icon: 'ZTC', tags: ['BSC'] },
-    { name: 'ESIM', ticker: 'ESIM', price: 0.050672, change: -19.97, vol: '$14.40M', cap: '$6.81M', icon: 'ESIM', tags: ['Arbitrum'] },
-    { name: 'AIAV', ticker: 'AIAV', price: 0.055871, change: -3.17, vol: '$7.00M', cap: '$3.26M', icon: 'AIAV', tags: ['Sonic'] },
-    { name: 'Q', ticker: 'Q', price: 0.019179, change: 5.11, vol: '$2.87M', cap: '$58.85M', icon: 'Q', tags: ['Sui'] },
-    { name: 'OOOO', ticker: 'OOOO', price: 0.0083373, change: -1.06, vol: '$601.50K', cap: '$1.31M', icon: 'OOOO', tags: ['TRON'] },
-    { name: 'TIMI', ticker: 'TIMI', price: 0.014088, change: -23.00, vol: '$332.59M', cap: '$5.60M', icon: 'TIMI', tags: ['Base'] },
-    { name: 'COLLECT', ticker: 'COLLECT', price: 0.085545, change: -4.32, vol: '$7.51M', cap: '$45.93M', icon: 'COLLECT', tags: ['Ethereum'] }
-])
+    { name: 'Meteora', ticker: 'MET', price: 0.2673, change: 4.01, vol: '$15.99M', cap: '$131.55M', icon: 'MET', tags: ['DeFi'] },
+    { name: 'Pepe', ticker: 'PEPE', price: 0.00001865, change: 5.42, vol: '$463.80M', cap: '$7.84B', icon: 'PEPE', tags: ['Meme'] },
+    { name: 'TRUMP', ticker: 'TRUMP', price: 12.45, change: 15.22, vol: '$224.53M', cap: '$1.12B', icon: 'TRUMP', tags: ['Meme'] },
+    { name: 'U', ticker: 'U', price: 0.12, change: 0.51, vol: '$1.26M', cap: '$1.81M', icon: 'U', tags: ['Meme'] },
+    { name: 'FOGO', ticker: 'FOGO', price: 0.012, change: 2.31, vol: '$1.12M', cap: '$1.45M', icon: 'FOGO', tags: ['Meme'] }
+].filter(coin => getCoinIcon(coin.icon)))
 
 const filteredAlphaList = computed(() => {
     if (activeAlphaFilter.value === 'All') return alphaTokens.value
@@ -177,16 +185,9 @@ const filteredAlphaList = computed(() => {
 // New Tab Logic
 const newTokensList = ref([
     { name: 'zkPass', ticker: 'ZKP', price: 0.1436, change: -6.08, vol: '$31.08M', cap: '$28.96M', dateListed: '2026-01-07', icon: 'ZKP' },
-    { name: '币安人生', ticker: '币安人生', price: 0.1539, change: 0.46, vol: '$102.33M', cap: '$153.90M', dateListed: '2026-01-07', icon: 'BA' },
-    { name: 'Brevis', ticker: 'BREV', price: 0.3689, change: -2.95, vol: '$157.91M', cap: '$92.22M', dateListed: '2026-01-06', icon: 'BREV' },
-    { name: 'Kyrgyz Som Stablecoin', ticker: 'KGST', price: 0.01138, change: -0.09, vol: '$59.46K', cap: '$5.30M', dateListed: '2025-12-24', icon: 'KGST' },
-    { name: 'APRO', ticker: 'AT', price: 0.162, change: 0.00, vol: '$4.41M', cap: '$40.50M', dateListed: '2025-11-27', icon: 'AT' },
-    { name: 'Lorenzo Protocol', ticker: 'BANK', price: 0.0461, change: -1.28, vol: '$3.23M', cap: '$24.28M', dateListed: '2025-11-13', icon: 'BANK' },
     { name: 'Meteora', ticker: 'MET', price: 0.2673, change: 4.01, vol: '$15.99M', cap: '$131.55M', dateListed: '2025-11-13', icon: 'MET' },
-    { name: 'Allora', ticker: 'ALLO', price: 0.1105, change: -0.81, vol: '$7.51M', cap: '$22.15M', dateListed: '2025-11-11', icon: 'ALLO' },
-    { name: 'SAPIEN', ticker: 'SAPIEN', price: 0.1437, change: 3.75, vol: '$9.22M', cap: '$41.30M', dateListed: '2025-11-06', icon: 'SAPIEN' },
-    { name: 'Momentum', ticker: 'MMT', price: 0.2557, change: 0.43, vol: '$11.26M', cap: '$55.83M', dateListed: '2025-11-04', icon: 'MMT' }
-])
+    { name: 'Sui', ticker: 'SUI', price: 1.82, change: 0.74, vol: '$353.53M', cap: '$6.92B', dateListed: '2025-11-04', icon: 'SUI' }
+].filter(coin => getCoinIcon(coin.icon)))
 
 // Zones Tab Logic
 const zonesList = ref([
@@ -290,8 +291,9 @@ onMounted(() => {
                                 class="flex items-center justify-between group hover:opacity-80 transition-opacity">
                                 <div class="flex items-center gap-3">
                                     <div
-                                        class="w-6 h-6 rounded-full bg-[#2b3139] border border-[#2b3139] flex items-center justify-center font-bold text-white text-[10px] group-hover:border-primary transition-colors">
-                                        {{ item.icon.slice(0, 2) }}
+                                        class="w-6 h-6 rounded-full bg-[#2b3139] border border-[#2b3139] flex items-center justify-center overflow-hidden group-hover:border-primary transition-colors">
+                                        <img :src="getCoinIcon(item.ticker)" :alt="item.ticker"
+                                            class="w-full h-full object-cover" />
                                     </div>
                                     <span
                                         class="text-[14px] font-bold text-white group-hover:text-primary transition-colors">{{
@@ -540,8 +542,10 @@ onMounted(() => {
                         <td class="py-4">
                             <router-link :to="'/trade/' + coin.ticker + '_USDT'" class="flex items-center gap-3">
                                 <div
-                                    class="w-6 h-6 rounded-full bg-[#2b3139] flex items-center justify-center text-[10px] font-bold text-white group-hover:bg-primary group-hover:text-black transition-colors">
-                                    {{ coin.icon.substring(0, 2) }}</div>
+                                    class="w-6 h-6 rounded-full bg-[#2b3139] flex items-center justify-center overflow-hidden transition-colors">
+                                    <img :src="getCoinIcon(coin.icon)" :alt="coin.ticker"
+                                        class="w-full h-full object-cover" />
+                                </div>
                                 <div class="flex flex-col md:flex-row md:items-baseline md:gap-2">
                                     <span
                                         class="font-bold text-white text-[15px] group-hover:text-primary transition-colors">{{

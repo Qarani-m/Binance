@@ -1,4 +1,41 @@
 <script setup>
+import { ref } from 'vue'
+
+const videos = ref([
+    { id: 1, src: '/videos/humans-luis-en.mp4', isPlaying: false, ref: null },
+    { id: 2, src: '/videos/humans-mohit-en.mp4', isPlaying: false, ref: null },
+    { id: 3, src: '/videos/humans-dennis-en.mp4', isPlaying: false, ref: null }
+])
+
+const videoRefs = ref([])
+
+const togglePlay = (index) => {
+    const video = videoRefs.value[index]
+    if (video.paused) {
+        // Pause all other videos first
+        videoRefs.value.forEach((v, i) => {
+            if (i !== index) {
+                if (v) v.pause()
+                videos.value[i].isPlaying = false
+            }
+        })
+        video.play()
+        videos.value[index].isPlaying = true
+    } else {
+        video.pause()
+        videos.value[index].isPlaying = false
+    }
+}
+
+// Ensure thumbnails show by loading the first frame
+import { onMounted } from 'vue'
+onMounted(() => {
+    videoRefs.value.forEach(video => {
+        if (video) {
+            video.currentTime = 0.1
+        }
+    })
+})
 </script>
 
 <template>
@@ -40,53 +77,19 @@
 
             <!-- Video Grid -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Video Item 1 -->
-                <div class="group relative aspect-video bg-bg-card rounded-xl overflow-hidden cursor-pointer">
-                    <!-- Placeholder Image -->
-                    <div
-                        class="absolute inset-0 bg-gradient-to-tr from-bg-card to-bg-hover flex items-center justify-center">
-                        <div class="text-text-secondary text-sm">Stock Video 1</div>
-                    </div>
-                    <!-- Play Button Overlay -->
-                    <div
-                        class="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/10 transition-colors">
-                        <div
-                            class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center pl-1 group-hover:scale-110 transition-transform">
-                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M8 5v14l11-7z" />
-                            </svg>
-                        </div>
-                    </div>
-                </div>
+                <div v-for="(video, index) in videos" :key="video.id" @click="togglePlay(index)"
+                    class="group relative aspect-video bg-bg-card rounded-xl overflow-hidden cursor-pointer shadow-lg hover:shadow-primary/5 transition-all">
 
-                <!-- Video Item 2 -->
-                <div class="group relative aspect-video bg-bg-card rounded-xl overflow-hidden cursor-pointer">
-                    <div
-                        class="absolute inset-0 bg-gradient-to-tr from-bg-card to-bg-hover flex items-center justify-center">
-                        <div class="text-text-secondary text-sm">Stock Video 2</div>
-                    </div>
-                    <div
-                        class="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/10 transition-colors">
-                        <div
-                            class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center pl-1 group-hover:scale-110 transition-transform">
-                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M8 5v14l11-7z" />
-                            </svg>
-                        </div>
-                    </div>
-                </div>
+                    <video ref="videoRefs" class="w-full h-full object-cover" playsinline preload="metadata"
+                        :src="video.src">
+                    </video>
 
-                <!-- Video Item 3 -->
-                <div class="group relative aspect-video bg-bg-card rounded-xl overflow-hidden cursor-pointer">
-                    <div
-                        class="absolute inset-0 bg-gradient-to-tr from-bg-card to-bg-hover flex items-center justify-center">
-                        <div class="text-text-secondary text-sm">Stock Video 3</div>
-                    </div>
-                    <div
-                        class="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/10 transition-colors">
+                    <!-- Play/Pause Overlay -->
+                    <div v-if="!video.isPlaying"
+                        class="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/10 transition-all duration-300">
                         <div
-                            class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center pl-1 group-hover:scale-110 transition-transform">
-                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            class="w-12 h-12 rounded-full bg-black/50 border border-white/20 flex items-center justify-center pl-0.5 shadow-xl group-hover:scale-110 transition-all duration-300">
+                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M8 5v14l11-7z" />
                             </svg>
                         </div>
