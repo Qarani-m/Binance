@@ -17,6 +17,12 @@ const router = createRouter({
       meta: { title: "Dashboard | Binance" },
     },
     {
+      path: "/markets",
+      name: "markets",
+      component: () => import("@/views/MarketPage.vue"),
+      meta: { title: "Markets Overview | Binance" },
+    },
+    {
       path: "/trade/:pair",
       name: "spot-trading",
       component: () => import("@/views/SpotTradingPage.vue"),

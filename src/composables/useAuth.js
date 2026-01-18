@@ -13,7 +13,7 @@ export function useAuth() {
   const initSocket = (userId) => {
     if (socket.value) return;
 
-    socket.value = io("http://localhost:3000");
+    socket.value = io("https://crypto-exchange-bc-latest-1.onrender.com");
 
     socket.value.on("connect", () => {
       if (!userId) {

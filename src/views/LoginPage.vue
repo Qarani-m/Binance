@@ -1,9 +1,10 @@
 <script setup>
 import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useAuth } from '../composables/useAuth'
 
 const router = useRouter()
+const route = useRoute()
 const { login, verifyOtp } = useAuth()
 const step = ref(1) // 1: Email, 2: Password, 3: Verification, 4: StayLoggedIn
 const emailPhone = ref('')
@@ -53,7 +54,9 @@ const nextStep = async () => {
             isProcessing.value = false
         }
     } else if (step.value === 4) {
-        router.push('/dashboard')
+        // Check for redirect query param
+        const redirectPath = route.query.redirect || '/dashboard'
+        router.push(redirectPath)
     }
 }
 

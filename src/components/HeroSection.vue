@@ -1,8 +1,13 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuth } from '@/composables/useAuth'
 
+const router = useRouter()
+const { isLoggedIn } = useAuth()
 const activeTab = ref('popular')
 const userCount = ref(303851303)
+const ws = ref(null)
 
 // Badge hover states
 const badge1Hovered = ref(false)
@@ -13,15 +18,89 @@ onMounted(() => {
   setInterval(() => {
     userCount.value += Math.floor(Math.random() * 3)
   }, 2000)
+
+  initBinanceStream()
 })
 
-const popularCoins = [
-  { symbol: 'BTC', name: 'Bitcoin', price: '$91,783.31', change: '+1.19%' },
-  { symbol: 'ETH', name: 'Ethereum', price: '$3,145.06', change: '+1.49%' },
-  { symbol: 'BNB', name: 'BNB', price: '$900.87', change: '+1.46%' },
-  { symbol: 'XRP', name: 'XRP', price: '$2.14', change: '+0.77%' },
-  { symbol: 'ASTER', name: 'Aster', price: '$0.722', change: '+0.84%' },
-]
+onUnmounted(() => {
+  if (ws.value) ws.value.close()
+})
+
+// Coins Data Configuration
+const popularCoins = ref([
+  { symbol: 'BTC', name: 'Bitcoin', price: 0, change: 0, icon: 'bitcoin-icon.png', pair: 'BTCUSDT' },
+  { symbol: 'ETH', name: 'Ethereum', price: 0, change: 0, icon: 'ethereum-icon.png', pair: 'ETHUSDT' },
+  { symbol: 'BNB', name: 'BNB', price: 0, change: 0, icon: 'bnb-icon.png', pair: 'BNBUSDT' },
+  { symbol: 'XRP', name: 'XRP', price: 0, change: 0, icon: 'xrp-icon.png', pair: 'XRPUSDT' },
+  { symbol: 'SOL', name: 'Solana', price: 0, change: 0, icon: 'SOL-icon.png', pair: 'SOLUSDT' },
+])
+
+const newListingCoins = ref([
+  { symbol: 'TRUMP', name: 'Official Trump', price: 0, change: 0, icon: 'TRUMP-icon.png', pair: 'TRUMPUSDT' },
+  { symbol: 'SUI', name: 'Sui', price: 0, change: 0, icon: 'SUI-icon.png', pair: 'SUIUSDT' },
+  { symbol: 'PEPE', name: 'Pepe', price: 0, change: 0, icon: 'PEPE-icon.png', pair: 'PEPEUSDT' },
+  { symbol: 'WLD', name: 'Worldcoin', price: 0, change: 0, icon: 'WLD-icon.png', pair: 'WLDUSDT' },
+  { symbol: 'AVAX', name: 'Avalanche', price: 0, change: 0, icon: 'AVAX-icon.png', pair: 'AVAXUSDT' }
+])
+
+// Computed property to switch lists
+const activeList = computed(() => {
+  return activeTab.value === 'popular' ? popularCoins.value : newListingCoins.value
+})
+
+const initBinanceStream = () => {
+  // Combine all streams we need
+  const streams = [
+    ...popularCoins.value.map(c => `${c.pair.toLowerCase()}@ticker`),
+    ...newListingCoins.value.map(c => `${c.pair.toLowerCase()}@ticker`)
+  ].join('/')
+
+  ws.value = new WebSocket(`wss://stream.binance.com:9443/ws/${streams}`)
+
+  ws.value.onmessage = (event) => {
+    const data = JSON.parse(event.data)
+    updateCoinData(data)
+  }
+}
+
+const updateCoinData = (data) => {
+  // Update Popular List
+  const popIndex = popularCoins.value.findIndex(c => c.pair === data.s)
+  if (popIndex !== -1) {
+    popularCoins.value[popIndex].price = parseFloat(data.c)
+    popularCoins.value[popIndex].change = parseFloat(data.P)
+  }
+
+  // Update New Listing List
+  const newIndex = newListingCoins.value.findIndex(c => c.pair === data.s)
+  if (newIndex !== -1) {
+    newListingCoins.value[newIndex].price = parseFloat(data.c)
+    newListingCoins.value[newIndex].change = parseFloat(data.P)
+  }
+}
+
+const goToTrade = (coin) => {
+  router.push(`/trade/${coin.symbol}_USDT`)
+}
+
+const handleViewAll = () => {
+  if (isLoggedIn.value) {
+    router.push('/markets')
+  } else {
+    router.push({ path: '/login', query: { redirect: '/markets' } })
+  }
+}
+
+// Formatting Helpers
+const formatPrice = (val) => {
+  if (!val) return 'Loading...'
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val)
+}
+
+const formatChange = (val) => {
+  if (!val) return '0.00%'
+  return (val > 0 ? '+' : '') + val.toFixed(2) + '%'
+}
 
 const newsItems = [
   "White House Economic Advisor Calls for Further Fed Rate Cuts",
@@ -30,6 +109,13 @@ const newsItems = [
   "Bitcoin Market Analysis Suggests Caution Amid Increased Demand for Downside Protection"
 ]
 </script>
+
+<style scoped>
+.text-error {
+  color: #F6465D;
+  /* Binance Standard Red */
+}
+</style>
 
 <template>
   <div class="pt-[64px] bg-bg-base flex justify-center">
@@ -58,7 +144,7 @@ const newsItems = [
           <div @mouseenter="badge1Hovered = true" @mouseleave="badge1Hovered = false"
             class="relative cursor-pointer group">
             <div class="flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-300"
-              :class="badge1Hovered ? 'bg-bg-card ring-2 ring-[#F6465D] shadow-[0_0_20px_rgba(246,70,93,0.3)]' : 'bg-transparent'">
+              :class="badge1Hovered ? 'bg-bg-card' : 'bg-transparent'">
               <!-- Left Laurel -->
               <img src="/svg/left.svg" alt="" class="w-5 h-11" />
 
@@ -84,7 +170,7 @@ const newsItems = [
           <div @mouseenter="badge2Hovered = true" @mouseleave="badge2Hovered = false"
             class="relative cursor-pointer group">
             <div class="flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-300"
-              :class="badge2Hovered ? 'bg-bg-card ring-2 ring-[#F6465D] shadow-[0_0_20px_rgba(246,70,93,0.3)]' : 'bg-transparent'">
+              :class="badge2Hovered ? 'bg-bg-card' : 'bg-transparent'">
               <!-- Left Laurel -->
               <img src="/svg/left.svg" alt="" class="w-5 h-11" />
 
@@ -107,7 +193,6 @@ const newsItems = [
           </div>
         </div>
 
-        <!-- Sign Up Row -->
         <!-- Sign Up Row -->
         <div class="flex flex-col sm:flex-row gap-4 max-w-[580px] mb-12">
           <div class="flex-1 relative w-full">
@@ -160,7 +245,7 @@ const newsItems = [
       <div class="lg:col-span-5 flex flex-col gap-6 pt-2">
 
         <!-- Markets Card -->
-        <div class="bg-bg-card rounded-[16px] p-4">
+        <div class="bg-bg-card rounded-[16px] p-4 min-h-[420px]">
           <div class="flex items-center justify-between mb-4 px-2">
             <div class="flex gap-6">
               <button class="text-[16px] font-medium transition-colors border-b-2 pb-1"
@@ -174,32 +259,32 @@ const newsItems = [
                 New Listing
               </button>
             </div>
-            <a href="#" class="text-xs text-text-secondary hover:text-primary flex items-center gap-1">
+            <button @click="handleViewAll"
+              class="text-xs text-text-secondary hover:text-primary flex items-center gap-1">
               View All 350+ Coins <svg class="w-3 h-3" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd"
                   d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
                   clip-rule="evenodd" />
               </svg>
-            </a>
+            </button>
           </div>
 
           <div class="flex flex-col">
-            <div v-for="coin in popularCoins" :key="coin.symbol"
+            <div v-for="coin in activeList" :key="coin.symbol" @click="goToTrade(coin)"
               class="flex items-center justify-between py-3 px-2 hover:bg-bg-hover rounded-lg cursor-pointer transition-colors group">
               <div class="flex items-center gap-3">
-                <!-- Coin Icon Placeholder -->
-                <div
-                  class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-[10px] font-bold text-white">
-                  {{ coin.symbol[0] }}
-                </div>
+                <!-- Coin Icon -->
+                <img :src="`/coin-icons/${coin.icon}`" :alt="coin.name" class="w-8 h-8 rounded-full" />
                 <div>
                   <span class="text-sm font-medium text-text-primary group-hover:text-primary">{{ coin.symbol }}</span>
                   <span class="text-xs text-text-secondary ml-1">{{ coin.name }}</span>
                 </div>
               </div>
               <div class="text-right">
-                <div class="text-sm text-text-primary font-medium">{{ coin.price }}</div>
-                <div class="text-xs text-success">{{ coin.change }}</div>
+                <div class="text-sm text-text-primary font-medium">{{ formatPrice(coin.price) }}</div>
+                <div class="text-xs" :class="coin.change >= 0 ? 'text-success' : 'text-error'">
+                  {{ formatChange(coin.change) }}
+                </div>
               </div>
             </div>
           </div>

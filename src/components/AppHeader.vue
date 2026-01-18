@@ -15,49 +15,49 @@ const handleLogout = () => {
 
 const tradeDropdown = {
   basic: [
-    { name: 'Spot', desc: 'Buy and sell on the Spot market with advanced tools', icon: '📊', path: '/trade/BTC_USDC' },
-    { name: 'Margin', desc: 'Increase your profits with leverage', icon: '📈', path: '/margin' },
+    { name: 'Spot', desc: 'Buy and sell on the Spot market with advanced tools', icon: '/svg-icons/trade-spot.svg', path: '/trade/BTC_USDC' },
+    { name: 'Margin', desc: 'Increase your profits with leverage', icon: '/svg-icons/trade-margin.svg', path: '/margin' },
 
   ],
   advanced: [
-    { name: 'Trading Bots', desc: 'Trade smarter with our various automated strategies - easy and reliable', icon: '🤖' },
-    { name: 'Alpha', desc: 'Quick access to Web3 via Alpha Trading', icon: '🌐', path: '/alpha' },
+    { name: 'Trading Bots', desc: 'Trade smarter with our various automated strategies - easy and reliable', icon: '/svg-icons/trade-trading-bots.svg' },
+    { name: 'Alpha', desc: 'Quick access to Web3 via Alpha Trading', icon: '/svg-icons/trade-alpha.svg', path: '/alpha' },
   ]
 }
 
 const futuresDropdown = [
-  { name: 'USD⊝-M Futures', desc: 'Contracts settled in USDC', icon: '📄', path: '/futures' },
-  { name: 'COIN-M Futures', desc: 'Contracts settled in cryptocurrency', icon: '📄', path: '/coin-m' },
-  { name: 'Options', desc: 'USDC Options with limited downside and affordable entry', icon: '📊', path: '/options' }
+  { name: 'USD⊝-M Futures', desc: 'Contracts settled in USDC', icon: '/svg-icons/futures-usd-m-futures.svg', path: '/futures' },
+  { name: 'COIN-M Futures', desc: 'Contracts settled in cryptocurrency', icon: '/svg-icons/futures-coin-m-futures.svg', path: '/coin-m' },
+  { name: 'Options', desc: 'USDC Options with limited downside and affordable entry', icon: '/svg-icons/futures-options.svg', path: '/options' }
 ]
 
 const earnDropdown = [
-  { name: 'Overview', desc: 'One-stop portal for all Earn products', icon: '🔒', path: '/earn' },
+  { name: 'Overview', desc: 'One-stop portal for all Earn products', icon: '/svg-icons/earn-overview.svg', path: '/earn' },
   {
-    name: 'Simple Earn', desc: 'Earn passive income on 300+ crypto assets with flexible and locked terms', icon: '💰',
+    name: 'Simple Earn', desc: 'Earn passive income on 300+ crypto assets with flexible and locked terms', icon: '/svg-icons/earn-simple-earn.svg',
     path: '/earn/simple'
   },
   {
-    name: 'Advanced Earn', desc: 'Maximize your returns with our advanced yield investment products', icon: '📈', path:
+    name: 'Advanced Earn', desc: 'Maximize your returns with our advanced yield investment products', icon: '/svg-icons/earn-advanced-earn.svg', path:
       '/earn/advanced'
   },
-  { name: 'Loans', desc: 'Access quick and easy loans with competitive rates', icon: '🏦', path: '/earn/loan' }
+  { name: 'Loans', desc: 'Access quick and easy loans with competitive rates', icon: '/svg-icons/earn-loans.svg', path: '/earn/loan' }
 ]
 
 const squareDropdown = [
-  { name: 'Square', desc: 'Stay informed with everything crypto', icon: '📶', path: '/square' },
-  { name: 'Blog', desc: 'Expand your knowledge and get the latest insights', icon: '📝', path: '/blog' },
-  { name: 'Research', desc: 'Institutional-grade analysis, in-depth insights, and more', icon: '🔬', path: '/research' }
+  { name: 'Square', desc: 'Stay informed with everything crypto', icon: '/svg-icons/square-square.svg', path: '/square' },
+  { name: 'Blog', desc: 'Expand your knowledge and get the latest insights', icon: '/svg-icons/square-blog.svg', path: '/blog' },
+  { name: 'Research', desc: 'Institutional-grade analysis, in-depth insights, and more', icon: '/svg-icons/square-research.svg', path: '/research' }
 ]
 
 const moreDropdown = [
   {
-    name: 'VIP & Institutional', desc: 'Your trusted digital asset platform for VIPs and institutions', icon: '💎', path:
+    name: 'VIP & Institutional', desc: 'Your trusted digital asset platform for VIPs and institutions', icon: '/svg-icons/more-vip-and-institutions.svg', path:
       '/vip'
   },
-  { name: 'Launchpool', desc: 'Discover and gain access to new token launches', icon: '🚀', path: '/launchpool' },
-  { name: 'Binance Wallet', desc: 'Access and Navigate Web3 Effortlessly', icon: '👛', path: '/web3wallet' },
-  { name: 'Binance Academy', desc: 'Free crypto & blockchain education', icon: '🎓', path: '/academy' }
+  { name: 'Launchpool', desc: 'Discover and gain access to new token launches', icon: '/svg-icons/more-launchpool.svg', path: '/launchpool' },
+  { name: 'Binance Wallet', desc: 'Access and Navigate Web3 Effortlessly', icon: '/svg-icons/more-binance-wallet.svg', path: '/web3wallet' },
+  { name: 'Binance Academy', desc: 'Free crypto & blockchain education', icon: '/svg-icons/more-binance-academy.svg', path: '/academy' }
 ]
 
 const props = defineProps({
@@ -75,7 +75,7 @@ const closeMobileMenu = () => {
 <template>
   <header
     :class="[isFixed ? 'fixed top-0 left-0 right-0 z-[100] h-[64px]' : 'h-[64px] flex-none', 'bg-[#181a20] border-b border-[#2b3139]']">
-    <div class="max-w-[1248px] mx-auto px-6 h-full flex items-center justify-between">
+    <div class="w-full px-4 md:px-6 h-full flex items-center justify-between">
       <!-- Left Side: Logo & Nav -->
       <div class="flex items-center gap-2 md:gap-6 h-full">
         <!-- Logo -->
@@ -113,7 +113,7 @@ const closeMobileMenu = () => {
                     <component :is="item.path ? 'router-link' : 'a'" v-for="item in tradeDropdown.basic"
                       :key="item.name" :to="item.path" :href="!item.path ? '#' : undefined"
                       class="flex items-start gap-3 p-3 rounded hover:bg-[#2b3139] transition-colors group">
-                      <span class="text-xl mt-0.5">{{ item.icon }}</span>
+                      <img :src="item.icon" :alt="item.name" class="w-5 h-5 object-contain" />
                       <div class="flex-1">
                         <div class="flex items-center gap-2">
                           <span class="text-white text-sm font-medium group-hover:text-primary">{{ item.name }}</span>
@@ -130,7 +130,7 @@ const closeMobileMenu = () => {
                     <component :is="item.path ? 'router-link' : 'a'" v-for="item in tradeDropdown.advanced"
                       :key="item.name" :to="item.path" :href="!item.path ? '#' : undefined"
                       class="flex items-start gap-3 p-3 rounded hover:bg-[#2b3139] transition-colors group">
-                      <span class="text-xl mt-0.5">{{ item.icon }}</span>
+                      <img :src="item.icon" :alt="item.name" class="w-5 h-5 object-contain" />
                       <div class="flex-1">
                         <div class="flex items-center gap-2">
                           <span class="text-white text-sm font-medium group-hover:text-primary">{{ item.name }}</span>
@@ -159,7 +159,7 @@ const closeMobileMenu = () => {
                 <component :is="item.path ? 'router-link' : 'a'" v-for="item in futuresDropdown" :key="item.name"
                   :to="item.path" :href="!item.path ? '#' : undefined"
                   class="flex items-start gap-3 p-3 rounded hover:bg-[#2b3139] transition-colors group">
-                  <span class="text-xl mt-0.5">{{ item.icon }}</span>
+                  <img :src="item.icon" :alt="item.name" class="w-6 h-6 object-contain" />
                   <div class="flex-1">
                     <span class="text-white text-sm font-medium group-hover:text-primary">{{ item.name }}</span>
                     <p class="text-[#848E9C] text-xs mt-0.5">{{ item.desc }}</p>
@@ -184,7 +184,7 @@ const closeMobileMenu = () => {
                 <component :is="item.path ? 'router-link' : 'a'" v-for="item in earnDropdown" :key="item.name"
                   :to="item.path" :href="!item.path ? '#' : undefined"
                   class="flex items-start gap-3 p-3 rounded hover:bg-[#2b3139] transition-colors group">
-                  <span class="text-xl mt-0.5">{{ item.icon }}</span>
+                  <img :src="item.icon" :alt="item.name" class="w-6 h-6 object-contain" />
                   <div class="flex-1">
                     <span class="text-white text-sm font-medium group-hover:text-primary block">{{ item.name }}</span>
                     <p class="text-[#848E9C] text-xs mt-0.5">{{ item.desc }}</p>
@@ -209,7 +209,7 @@ const closeMobileMenu = () => {
                 <component :is="item.path ? 'router-link' : 'a'" v-for="item in squareDropdown" :key="item.name"
                   :to="item.path" :href="!item.path ? '#' : undefined"
                   class="flex items-start gap-3 p-3 rounded hover:bg-[#2b3139] transition-colors group">
-                  <span class="text-xl mt-0.5">{{ item.icon }}</span>
+                  <img :src="item.icon" :alt="item.name" class="w-6 h-6 object-contain" />
                   <div class="flex-1">
                     <span class="text-white text-sm font-medium group-hover:text-primary block">{{ item.name }}</span>
                     <p class="text-[#848E9C] text-xs mt-0.5">{{ item.desc }}</p>
@@ -234,7 +234,7 @@ const closeMobileMenu = () => {
                 <component :is="item.path ? 'router-link' : 'a'" v-for="item in moreDropdown" :key="item.name"
                   :to="item.path" :href="!item.path ? '#' : undefined"
                   class="flex items-start gap-3 p-3 rounded hover:bg-[#2b3139] transition-colors group">
-                  <span class="text-xl mt-0.5">{{ item.icon }}</span>
+                  <img :src="item.icon" :alt="item.name" class="w-6 h-6 object-contain" />
                   <div class="flex-1">
                     <span class="text-white text-sm font-medium group-hover:text-primary block">{{ item.name }}</span>
                     <p class="text-[#848E9C] text-xs mt-0.5">{{ item.desc }}</p>
