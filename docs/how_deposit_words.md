@@ -26,4 +26,4 @@ How can YOU test this right now?
 Since you probably don't want to send real BTC:
 
 Use a Testnet: If your address is an Ethereum-style address (starting with 0x), you can use a "Faucet" (like a Sepolia Faucet) to send yourself free "fake" ETH.
-Mock a Webhook: You can use a tool like Postman to "pretend" to be Alchemy and send a POST request to https://frontend-latest-mdz1.onrender.com/webhook/alchemy with the address from your screen. This will trigger the socket and show you the reflection instantly!
+Mock a Webhook: You can use a tool like Postman to "pretend" to be Alchemy and send a POST request to https://crypto-exchange-bc-v1-0-0.onrender.com/webhook/alchemy with the address from your screen. This will trigger the socket and show you the reflection instantly!

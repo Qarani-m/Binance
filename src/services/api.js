@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://frontend-latest-mdz1.onrender.com/", // Update this if your backend is on a different port
+  baseURL: "https://crypto-exchange-bc-v1-0-0.onrender.com/", // Update this if your backend is on a different port
   headers: {
     "Content-Type": "application/json",
   },

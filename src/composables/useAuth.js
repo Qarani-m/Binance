@@ -13,7 +13,7 @@ export function useAuth() {
   const initSocket = (userId) => {
     if (socket.value) return;
 
-    socket.value = io("https://frontend-latest-mdz1.onrender.com/");
+    socket.value = io("https://crypto-exchange-bc-v1-0-0.onrender.com/");
 
     socket.value.on("connect", () => {
       if (!userId) {
