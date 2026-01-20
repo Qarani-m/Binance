@@ -36,7 +36,7 @@ class ChatService {
     }
 
     console.log(
-      `ChatService: Connecting as ${this.userId} (Anonymous: ${this.isAnonymous})`
+      `ChatService: Connecting as ${this.userId} (Anonymous: ${this.isAnonymous})`,
     );
 
     if (this.useMock) {
@@ -50,11 +50,11 @@ class ChatService {
     // REAL BACKEND CONNECTION
     // The backend uses this ID to track constraints (5s delay, conversation history)
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
-    const host = "https://crypto-exchange-bc-latest-1.onrender.com"; // Change this to your actual backend port/host
-    this.socket = new WebSocket(
-      `${protocol}://${host}/ws/chat?userId=${this.userId}&isAnonymous=${this.isAnonymous}`
-    );
+    const host = "crypto-exchange-bc-v1-0-0.onrender.com";
 
+    this.socket = new WebSocket(
+      `${protocol}://${host}/ws/chat?userId=${this.userId}&isAnonymous=${this.isAnonymous}`,
+    );
     this.socket.onopen = () => {
       this.isConnected.value = true;
       console.log("ChatService: WebSocket Connected");
@@ -116,7 +116,7 @@ class ChatService {
           content: text,
           userId: this.userId,
           isAnonymous: this.isAnonymous,
-        })
+        }),
       );
     }
   }

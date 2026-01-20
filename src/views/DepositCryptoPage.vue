@@ -1,4 +1,5 @@
 <script setup>
+import { ref, computed, onMounted } from 'vue'
 import api from '@/services/api'
 import { useAuth } from '@/composables/useAuth'
 import AppHeader from '@/components/AppHeader.vue'

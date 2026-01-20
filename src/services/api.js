@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://crypto-exchange-bc-latest-1.onrender.com", // Update this if your backend is on a different port
+  baseURL: "http://localhost:3000/", // Update this if your backend is on a different port
   headers: {
     "Content-Type": "application/json",
   },
@@ -17,7 +17,7 @@ api.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;
